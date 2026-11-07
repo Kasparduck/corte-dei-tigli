@@ -1,0 +1,1552 @@
+<title>Corte dei Tigli</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Poliambulatorio Corte dei Tigli: progetto dimostrativo con dati di fantasia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Figtree:wght@400;500;600;700&display=swap">
+<style>/* le sole regole di MapLibre che servono, dentro la pagina (le pagine pubblicate accettano fogli di stile esterni solo da Google Fonts) */
+.maplibregl-map{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}.maplibregl-canvas{position:absolute;left:0;top:0}.maplibregl-canvas-container{position:absolute;inset:0}
+.maplibregl-marker{position:absolute;top:0;left:0;will-change:transform}.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right,.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right{position:absolute;pointer-events:none;z-index:2}
+.maplibregl-ctrl-top-left{top:0;left:0}.maplibregl-ctrl-bottom-right{right:0;bottom:0}.maplibregl-ctrl{clear:both;pointer-events:auto}.maplibregl-ctrl-attrib{padding:1px 6px}.maplibregl-ctrl-attrib-button{display:none}</style>
+<style>
+/* Layout: a tutta larghezza. A sinistra una banda larga (foto del corridoio + 3 schede), a destra il rettangolo grande della sede fino quasi al bordo, con 4 schede in fila alla base. Angoli vivi. Ogni scheda è una fetta di minerale disegnata in codice: opacizzata sotto il testo, viva sul bordo sinistro. */
+/* Dal 7/11 (Franco): tutta la pagina sta sul grigio grafite, sia con il tema chiaro sia con lo scuro. Niente viola fuori dal rettangolo grande. */
+:root {
+  --quarzo: #131416;
+  --carta: rgb(30 32 36 / .88);
+  --argento: #d6cdbf;
+  --velluto: #25282c;
+  --ambra: #e9a65e;
+  --opale: #6fd3c6;
+  --ferro: #c08a62;
+  --inchiostro: #eceef0;
+  --tenue: #a4a9ae;
+  --linea: #33373c;
+  --velo-carta: rgb(20 22 25 / .66);
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --testo: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --banda: 400px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; position: relative; background: var(--quarzo); color: var(--inchiostro); font: 400 16px/1.55 var(--testo); }
+/* fondo di grafite: luci larghe e morbide (disegnate dallo script) e una brillantezza fine che respira piano */
+.velo, .brilla { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.brilla { background-size: 360px 360px; opacity: .5; }
+.brilla.due { background-position: 130px 210px; }
+@media (prefers-reduced-motion: no-preference) {
+  .brilla.uno { animation: brilla 9s ease-in-out infinite alternate; }
+  .brilla.due { animation: brilla 9s ease-in-out -4.5s infinite alternate-reverse; }
+  @keyframes brilla { from { opacity: .12; } to { opacity: .7; } }
+}
+.cornice { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 28px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; line-height: 1.05; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--ambra); outline-offset: 3px; }
+
+/* barra */
+.barra { display: grid; grid-template-columns: var(--banda) minmax(0, 1fr); gap: 14px; align-items: center; padding-block: 4px 14px; }
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--inchiostro); min-width: 0; }
+.logo svg { flex: none; width: 46px; height: 46px; }
+.logo .parole { display: grid; line-height: 1.05; }
+.logo b { font-family: var(--display); font-weight: 600; font-size: 1.45rem; letter-spacing: -.01em; }
+.logo small { font-size: .7rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--argento); }
+.voci { display: flex; align-items: center; justify-content: flex-end; gap: 6px 26px; flex-wrap: wrap; }
+.voci nav { display: flex; gap: 22px; margin-right: auto; }
+.voci nav a { color: var(--inchiostro); text-decoration: none; font-weight: 600; }
+.voci nav a:hover { color: var(--argento); }
+.referti { color: var(--argento); font-weight: 700; font-size: .95rem; text-decoration: none; }
+.tel { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tel span { display: block; font-size: .72rem; font-weight: 600; color: var(--tenue); }
+.prenota { background: var(--ambra); color: #fff; font-weight: 700; text-decoration: none; padding: 13px 24px; white-space: nowrap; }
+.prenota:hover { filter: brightness(1.07); }
+
+/* apertura */
+.apertura { display: grid; grid-template-columns: var(--banda) minmax(0, 1fr); gap: 14px; }
+.banda { display: flex; flex-direction: column; gap: 10px; }
+.bordo-bianco { border: 1px solid rgb(255 255 255 / .95); box-shadow: 0 0 0 1px rgb(0 0 0 / .12), 0 0 16px rgb(255 255 255 / .12); }
+.foto { position: relative; overflow: hidden; background: var(--velluto); }
+.foto > img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; }
+.foto > canvas.pietra { position: absolute; inset: 0; width: 100%; height: 100%; }
+.etichetta { position: absolute; z-index: 2; left: 16px; top: 14px; display: grid; gap: 3px; max-width: 34ch; color: #fff; text-shadow: 0 1px 8px rgb(0 0 0 / .5); }
+.etichetta em { font-style: normal; font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+.etichetta b { font-family: var(--display); font-size: 1.1rem; font-weight: 600; }
+.etichetta span { font-size: .82rem; }
+.foto.ok .etichetta { display: none; }
+.corridoio { flex: 1 1 auto; min-height: 460px; }
+/* foto del corridoio: nitida sulle persone; in alto (il soffitto) sfuma nella grafite con la chiocciola, così lo sfondo resta */
+.corridoio > img { position: absolute; inset: 0; object-position: 45% 38%; -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / .55) 9%, #000 22%); mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / .55) 9%, #000 22%); }
+
+.servizio { position: relative; overflow: hidden; display: grid; gap: 2px; padding: 14px 16px 14px 30px; text-decoration: none; color: inherit; min-height: 112px; align-content: center; flex: none; }
+.servizio canvas.pietra { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.servizio::before { content: ""; position: absolute; inset: 0 0 0 20px; background: var(--velo-carta); backdrop-filter: blur(2px); transition: inset .35s ease, background .35s; z-index: 1; }
+.servizio > :not(canvas) { position: relative; z-index: 2; }
+.servizio:hover::before { inset: 0 0 0 22px; }
+.servizio small { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--argento); }
+.servizio b { font-family: var(--display); font-weight: 600; font-size: 1.12rem; line-height: 1.2; }
+.servizio span { font-size: .88rem; color: var(--tenue); line-height: 1.4; }
+
+.sede { min-height: clamp(640px, 84vh, 920px); display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.sede .ombra { position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgb(10 11 13 / .8) 0%, rgb(10 11 13 / .35) 34%, transparent 62%); pointer-events: none; }
+.sede .testo { position: relative; z-index: 2; align-self: end; display: grid; gap: 16px; padding: clamp(22px, 3.4vw, 52px); padding-bottom: 28px; color: #fbf6f0; max-width: 800px; }
+.sede h1 { font-size: clamp(2.3rem, 4.6vw, 4.5rem); letter-spacing: -.015em; }
+.sede h1 em { font-style: italic; color: #f4c98e; }
+.sede .sotto { font-size: 1.08rem; max-width: 52ch; opacity: .95; }
+/* «Prenota una visita» nel rettangolo grande: giallino chiaro dentro un sottile bordo violetto (Franco, 7/11: solo bordo non si leggeva) */
+.sede .azioni .prenota { background: #f8edc4; border: 1.5px solid #9d7fe0; color: #23201a; padding: 12px 22px; box-shadow: 0 0 0 1px rgb(157 127 224 / .35); }
+.sede .azioni .prenota:hover { background: #fdf4d6; filter: none; }
+.sede .azioni .chiama { background: rgb(12 14 18 / .45); backdrop-filter: blur(3px); }
+.azioni { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+.azioni .chiama { color: #fbf6f0; font-weight: 700; text-decoration: none; border: 1.5px solid rgb(251 246 240 / .65); padding: 12px 20px; font-variant-numeric: tabular-nums; }
+.posto { position: absolute; z-index: 2; top: 18px; right: 18px; background: var(--carta); color: var(--inchiostro); padding: 12px 16px; display: grid; gap: 2px; box-shadow: 0 10px 30px rgb(0 0 0 / .22); text-decoration: none; font-variant-numeric: tabular-nums; border-left: 4px solid var(--opale); }
+.posto small { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--opale); }
+.posto b { font-size: 1.05rem; }
+.posto span { font-size: .85rem; color: var(--tenue); }
+.sede .etichetta { top: 18px; left: 22px; }
+/* la foto della sede: nitida in basso; salendo, il cielo si fonde con l ametista (cristallo in «screen» che sfuma verso il basso) */
+.sede > img { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - var(--fila-h, 0px)); object-position: 62% 100%; }
+.sede.ok .testo { align-self: start; padding-top: 128px; padding-bottom: 20px; }
+.sede.ok .ombra { background: linear-gradient(180deg, rgb(10 11 13 / .5) 0%, rgb(10 11 13 / .15) 42%, transparent 58%), linear-gradient(0deg, rgb(10 11 13 / .7) 0%, transparent 22%); }
+.sede > canvas.cielo { z-index: 1; height: calc(100% - var(--fila-h, 0px)); pointer-events: none; mix-blend-mode: screen; opacity: var(--forza-cielo, .45);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / .8) 30%, transparent 62%); mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / .8) 30%, transparent 62%); }
+.sede:not(.ok) > canvas.cielo { display: none; }
+.fila { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 0 12px 0; }
+.fila .servizio { border: 1px solid rgb(255 255 255 / .95); box-shadow: 0 0 0 1px rgb(0 0 0 / .1), 0 0 16px rgb(255 255 255 / .14); min-height: 112px; }
+
+.dimostrativo { margin: 0; text-align: center; background: rgb(255 255 255 / .05); color: var(--argento); font-size: .66rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-bottom: 1px solid rgb(255 255 255 / .08); }
+.prova { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 6px; align-items: center; background: var(--carta); border: 1px solid var(--linea); padding: 6px 8px 6px 14px; z-index: 5; box-shadow: 0 6px 20px rgb(0 0 0 / .14); font-size: .85rem; font-weight: 600; }
+.prova button { font: 700 .85rem var(--testo); border: 1px solid var(--linea); background: var(--quarzo); color: var(--inchiostro); padding: 6px 12px; cursor: pointer; }
+.prova button[aria-pressed="true"] { background: var(--argento); border-color: var(--argento); color: #16171a; }
+
+/* ---------- le sezioni sotto l'apertura ---------- */
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+.sez { padding-block: 84px 8px; display: grid; gap: 30px; }
+.sez-testa { display: grid; gap: 10px; max-width: 780px; }
+.occhio { font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--argento); }
+.sez h2 { font-size: clamp(2rem, 3.6vw, 3.3rem); letter-spacing: -.01em; }
+.sez h2 em { font-style: italic; color: var(--ambra); }
+.sez-testa p { color: var(--tenue); font-size: 1.08rem; max-width: 62ch; }
+.nota { font-size: .88rem; color: var(--tenue); }
+.bottone { display: inline-block; background: var(--ambra); color: #fff; font-weight: 700; text-decoration: none; padding: 12px 20px; border: 0; font: 700 1rem var(--testo); cursor: pointer; }
+.bottone.vuoto { background: transparent; color: inherit; border: 1.5px solid currentColor; }
+
+/* fascia scura: la stessa grafite, più profonda; le luci del fondo passano attraverso */
+.scura { --su: #eef1f2; --su-tenue: #a7b0b5; --metallo: #6fd3c6;
+  background: linear-gradient(180deg, rgb(6 7 8 / .55), rgb(6 7 8 / .4) 50%, rgb(6 7 8 / .6)); color: var(--su);
+  border-block: 1px solid rgb(255 255 255 / .06);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  position: relative; overflow: hidden; margin-top: 84px; padding-block: 72px; }
+.scura > * { position: relative; }
+.scura .occhio { color: var(--metallo); }
+.scura .sez-testa p, .scura .nota { color: var(--su-tenue); }
+.scura h2 em { color: var(--metallo); }
+
+/* 1. dimmi cosa ti serve — dal 7/11 (Franco: «la zona più insignificante e brutta») una TAVOLA ANATOMICA:
+   frasi come indice numerato | figura grande a reticolo 3D con scansione | risposta con il volto del medico; un filo rosso unisce il punto toccato alla risposta */
+#cerca { margin-top: 44px; padding-top: 44px; border-top: 1px solid rgb(96 150 214 / .75); }
+.tavola { position: relative; display: grid; grid-template-columns: minmax(0, .95fr) minmax(250px, .8fr) minmax(0, 1.15fr); border: 1px solid rgb(255 255 255 / .16);
+  background: radial-gradient(ellipse 34% 58% at 46% 52%, rgb(92 104 118 / .32), transparent 72%),
+    linear-gradient(90deg, rgb(255 255 255 / .028) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(rgb(255 255 255 / .028) 1px, transparent 1px) 0 0 / 32px 32px, rgb(10 11 13 / .55);
+  min-height: 660px; }
+.colonna-frasi { padding: 28px 26px; display: flex; flex-direction: column; justify-content: center; gap: 10px; border-right: 1px solid rgb(255 255 255 / .1); }
+.parole { display: grid; gap: 4px; }
+.parole span { font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #e07b7c; }
+.parole input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid rgb(255 255 255 / .55); color: var(--inchiostro); font: italic 400 1.18rem var(--display); padding: 10px 2px; }
+.parole input::placeholder { color: rgb(255 255 255 / .38); }
+.parole input:focus { outline: none; border-bottom-color: #d6383a; box-shadow: 0 1px 0 #d6383a; }
+.capito { min-height: 1.3em; font-size: .9rem; color: var(--tenue); }
+.allarme { background: rgb(214 56 58 / .16); border: 1px solid #d6383a; padding: 12px 14px; color: #fff; font-size: .95rem; }
+.allarme a { color: #fff; font-weight: 700; }
+.frasi { list-style: none; margin: 0; padding: 0; }
+.frasi button { width: 100%; display: flex; align-items: baseline; gap: 16px; text-align: left; cursor: pointer; background: none; border: 0; border-bottom: 1px solid rgb(255 255 255 / .09);
+  padding: 15px 8px 15px 10px; color: var(--tenue); font: 400 clamp(1.08rem, 1.5vw, 1.38rem)/1.25 var(--display); transition: color .25s, padding .25s, border-color .25s; border-left: 2px solid transparent; }
+.frasi button:hover { color: var(--inchiostro); }
+.frasi button[aria-pressed="true"] { color: #fff; font-style: italic; padding-left: 18px; border-left-color: #d6383a; }
+.frasi .num { flex: none; font: 600 .7rem var(--testo); letter-spacing: .16em; color: #d6383a; font-style: normal; }
+.sagoma { position: relative; display: grid; place-items: center; padding: 26px 8px 44px; overflow: hidden; }
+/* il corpo di luce: immagine ferma di riserva, lastra 3D sopra (canvas), punti sopra tutto */
+.figura-luce { position: relative; width: min(400px, 100%, 49vh); aspect-ratio: 2 / 3; touch-action: pan-y; }
+.figura-luce > img, .figura-luce > canvas, .figura-luce > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.figura-luce > img { object-fit: contain; mix-blend-mode: screen; }
+.figura-luce.tre-d > img { visibility: hidden; }
+.figura-luce.tre-d { cursor: grab; } .figura-luce.tre-d:active { cursor: grabbing; }
+.figura-luce > svg { overflow: visible; }
+.figura-luce .punto circle { stroke-width: .8; }
+.figura-luce .punto:hover circle, .figura-luce .punto:focus-visible circle { stroke-width: 1.4; }
+.figura-luce .punto[aria-pressed="true"] circle { stroke-width: 1.6; }
+.sagoma .didascalia { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--tenue); }
+.scansione { position: absolute; left: 18%; right: 18%; top: 6%; height: 1px; background: linear-gradient(90deg, transparent, rgb(214 56 58 / .7), transparent); box-shadow: 0 0 14px 1px rgb(214 56 58 / .35); pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) { .scansione { animation: scansione 7s ease-in-out infinite alternate; } @keyframes scansione { from { top: 6%; } to { top: 90%; } } }
+@media (prefers-reduced-motion: reduce) { .scansione { display: none; } }
+.punto { cursor: pointer; }
+.punto circle { fill: #0b0b0c; stroke: #d6383a; stroke-width: 1.3; transition: stroke-width .2s, fill .2s; }
+.punto:hover circle, .punto:focus-visible circle { stroke-width: 2.4; }
+.punto[aria-pressed="true"] circle { fill: #3a1112; stroke-width: 2.6; }
+.punto:focus-visible { outline: none; }
+.risposta { position: relative; z-index: 1; align-self: center; margin: 28px 28px 28px 8px; background: rgb(18 20 23 / .86); border: 1px solid rgb(255 255 255 / .85); padding: 26px 28px; }
+.risposta > * + * { margin-top: 8px; }
+.risposta small { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #e07b7c; }
+.risposta h3 { font-size: clamp(1.8rem, 2.6vw, 2.4rem); }
+.risposta .chi { font-weight: 600; }
+.risposta .righe { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--tenue); font-variant-numeric: tabular-nums; }
+.risposta .righe b { color: var(--inchiostro); }
+.risposta .cause { font-family: var(--display); font-style: italic; font-size: 1.15rem; color: var(--inchiostro); line-height: 1.4; }
+.risposta .bottone { display: inline-block; margin-top: 16px; font: 400 1.08rem var(--display); color: #111; letter-spacing: .01em; }
+.volto { float: right; width: 116px; height: 144px; margin: 0 0 12px 18px; position: relative; border: 1px solid rgb(255 255 255 / .85); background: var(--velluto); overflow: hidden; display: grid; place-items: end start; }
+.volto.ok em { display: none; }
+.volto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
+.volto em { position: relative; font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tenue); padding: 8px; line-height: 1.3; }
+.filo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+.filo path { fill: none; stroke: #d6383a; stroke-width: 1; stroke-dasharray: 4 3; }
+.filo circle { fill: #d6383a; }
+@media (max-width: 1000px) {
+  .tavola { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .colonna-frasi { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid rgb(255 255 255 / .1); padding: 18px; }
+  .frasi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+  .risposta { margin: 20px 16px 20px 0; }
+  .filo { display: none; }
+}
+@media (max-width: 640px) {
+  .tavola { grid-template-columns: minmax(0, 1fr); }
+  .frasi { grid-template-columns: minmax(0, 1fr); }
+  .figura-luce { width: min(300px, 100%); }
+  .risposta { margin: 0 14px 18px; }
+}
+
+/* 2. prossimi posti liberi */
+.posti { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid rgb(255 255 255 / .14); }
+.posti li { display: grid; grid-template-columns: 170px minmax(0, 1fr) 120px auto; gap: 8px 24px; align-items: center; padding: 16px 0; border-bottom: 1px solid rgb(255 255 255 / .14); font-variant-numeric: tabular-nums; }
+.posti .quando { font-family: var(--display); font-size: 1.35rem; color: var(--metallo); }
+.posti .cosa b { display: block; font-size: 1.05rem; }
+.posti .cosa span, .posti .durata { color: var(--su-tenue); font-size: .92rem; }
+.posti .bottone { background: transparent; color: var(--su); border: 1px solid var(--metallo); padding: 10px 16px; }
+.posti .bottone:hover { background: var(--metallo); color: #0e1414; }
+
+/* 3. specialità */
+.griglia-spec { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.spec { background: var(--carta); border: 1px solid var(--linea); display: grid; grid-template-rows: auto 1fr; text-decoration: none; color: inherit; }
+.spec .img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+.spec .img canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.spec .img em { position: absolute; left: 10px; right: 10px; bottom: 8px; justify-self: start; width: fit-content; max-width: calc(100% - 20px); font-style: normal; font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; line-height: 1.35; color: #2a2c2f; background: rgb(255 255 255 / .62); padding: 4px 8px; }
+/* 7/11 (Franco): foto vere al posto dei frattali («non mi convincevano»), scritte bianche su nero; la foto si avvicina piano al passaggio del mouse */
+.spec .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s cubic-bezier(.2, .7, .2, 1); }
+.spec:hover .img img { transform: scale(1.06); }
+.spec .img em { background: rgb(10 11 13 / .84); color: #fff; padding: 5px 9px; }
+@media (prefers-reduced-motion: reduce) { .spec .img img { transition: none; } .spec:hover .img img { transform: none; } }
+.spec .corpo { padding: 16px 18px 18px; display: grid; gap: 8px; align-content: start; }
+.spec h3 { font-size: 1.4rem; }
+.spec ul { margin: 0; padding-left: 18px; color: var(--tenue); font-size: .93rem; display: grid; gap: 3px; }
+.spec:hover { border-color: var(--argento); }
+
+/* 4. medici */
+.griglia-medici { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.medico { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; background: var(--carta); border: 1px solid var(--linea); padding: 14px; align-items: center; }
+.ritratto { position: relative; aspect-ratio: 1; overflow: hidden; display: grid; place-items: center; }
+.ritratto canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* 7/11 Franco: la foto del medico si perdeva nella pietra; pietra velata, foto in rilievo */
+.medico .ritratto canvas { opacity: .32; }
+.medico .ritratto .angolo { box-shadow: 0 14px 34px rgb(0 0 0 / .55); }
+.ritratto b { position: relative; font-family: var(--display); font-size: 2.2rem; color: #fff; text-shadow: 0 2px 10px rgb(0 0 0 / .45); }
+.medico h3 { font-size: 1.3rem; }
+.medico .spec-m { color: var(--argento); font-weight: 700; font-size: .92rem; }
+.medico p { font-size: .86rem; color: var(--tenue); }
+/* dal 7/11: schede verticali con la foto del medico nel suo studio, con la strumentazione del suo mestiere (foto GPT) */
+.medico { grid-template-columns: minmax(0, 1fr); align-items: start; padding: 0; gap: 0; }
+.medico > div:last-child { padding: 16px 18px 18px; display: grid; gap: 4px; }
+.ritratto { aspect-ratio: 4 / 5; border-bottom: 1px solid rgb(255 255 255 / .18); }
+.ritratto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; z-index: 1; }
+.ritratto.ok b { display: none; }
+/* 7/11 v9: le iniziali su una targhetta di grafite (si leggono anche sulle pietre chiare); quando arriva la foto, la pietra resta come cornice */
+.ritratto b { background: rgb(14 15 17 / .55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgb(255 255 255 / .35); padding: .15em .55em; text-shadow: none; }
+.ritratto img { inset: 10px; width: calc(100% - 20px); height: calc(100% - 20px); outline: 1px solid rgb(255 255 255 / .6); }
+/* 7/11 v9 (Franco): la cornice bronzo «un po' sfalsata» delle due donne di Velinea, intorno alla figura e a Dermatologia:
+   il lato sinistro sale oltre l'angolo, il lato alto parte più a destra */
+:root { --bronzo: #b49e82; }
+.sfalsata { position: relative; }
+.sfalsata::before, .sfalsata::after { content: ""; position: absolute; pointer-events: none; z-index: 3; }
+.sfalsata::before { inset: -7px; border-right: 3px solid var(--bronzo); border-bottom: 3px solid var(--bronzo); background: linear-gradient(var(--bronzo), var(--bronzo)) 13px 0 / calc(100% - 13px) 3px no-repeat; }
+.sfalsata::after { left: -7px; top: -27px; bottom: -7px; width: 3px; background: var(--bronzo); }
+.sagoma.sfalsata::before { inset: 30px 22px 42px 22px; }
+.sagoma.sfalsata::after { left: 22px; top: 10px; bottom: 42px; }
+/* la mappa: etichette sulla città e il pulsante per salire e scendere */
+.etichetta-3d { position: absolute; left: 0; top: 0; pointer-events: none; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #f1ece2; background: rgb(14 15 17 / .72); border: 1px solid rgb(255 255 255 / .28); padding: 4px 8px; white-space: nowrap; opacity: 0; transition: opacity .35s; z-index: 2; }
+.etichetta-3d.qui { color: #1d1408; background: var(--ambra); border-color: transparent; }
+.vista-3d { position: absolute; top: 12px; right: 12px; z-index: 3; font: 700 .8rem var(--testo); background: rgb(14 15 17 / .78); color: #f1ece2; border: 1px solid rgb(255 255 255 / .55); padding: 9px 14px; cursor: pointer; }
+.vista-3d:hover { background: rgb(14 15 17 / .92); border-color: #fff; }
+.arrivare .corpo a { color: var(--argento); text-underline-offset: 3px; }
+.arrivare .corpo a:hover { color: var(--inchiostro); }
+/* 7/11 v9 (Franco): la foto del medico in un angolo della pietra, con la cornice bronzo sfalsata; la pietra resta grande e visibile */
+.ritratto .angolo { position: absolute; width: 46%; aspect-ratio: 4 / 5; z-index: 1; background: rgb(14 15 17 / .6); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); display: grid; place-content: center; justify-items: center; gap: 6px; }
+.ritratto .angolo.tl { top: 34px; left: 24px; } .ritratto .angolo.tr { top: 34px; right: 24px; }
+.ritratto .angolo.bl { bottom: 24px; left: 24px; } .ritratto .angolo.br { bottom: 24px; right: 24px; }
+.ritratto .angolo img { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; outline: 0; }
+.ritratto .angolo b { font-size: 1.6rem; }
+.ritratto .angolo em { font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgb(255 255 255 / .7); }
+.ritratto .angolo.ok b, .ritratto .angolo.ok em { display: none; }
+
+.medico .strumenti { margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--linea); color: var(--inchiostro); font-size: .86rem; }
+.medico .strumenti span { display: block; font-size: .64rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--opale); margin-bottom: 2px; }
+
+/* 5. prezzi */
+.prezzi-wrap { overflow-x: auto; }
+.prezzi { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 520px; }
+.prezzi th { text-align: left; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); font-weight: 700; padding: 10px 12px; border-bottom: 2px solid var(--inchiostro); }
+.prezzi td { padding: 15px 12px; border-bottom: 1px solid var(--linea); }
+.prezzi td:first-child { font-weight: 600; }
+.prezzi td:last-child, .prezzi th:last-child { text-align: right; }
+.prezzi td:last-child { font-family: var(--display); font-size: 1.3rem; }
+
+/* 6. come prenotare */
+.tre { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.via { background: var(--carta); border: 1px solid var(--linea); padding: 24px; display: grid; gap: 10px; align-content: start; }
+.via h3 { font-size: 1.5rem; }
+.via .grande { font-family: var(--display); font-size: 2rem; font-variant-numeric: tabular-nums; }
+.via ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-variant-numeric: tabular-nums; }
+.via li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--linea); padding-bottom: 6px; }
+.via p { color: var(--tenue); font-size: .95rem; }
+
+/* 7. orari e come arrivare */
+.due { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.orari { display: grid; gap: 14px; }
+.orario { background: var(--carta); border: 1px solid var(--linea); padding: 20px 22px; display: grid; gap: 8px; }
+.orario h3 { font-size: 1.3rem; }
+.orario dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 20px; font-variant-numeric: tabular-nums; }
+.orario dt { color: var(--tenue); }
+.orario dd { margin: 0; font-weight: 600; text-align: right; }
+
+/* 7/11 Franco: «alternare dei blu molto tenui, leggermente diversi e non accesi ma eleganti… per intervallare questi spazi, molto delicatamente;
+   dove c'è la dottoressa un colore solo». Due blu velati che si alternano (A più chiaro e freddo, B più profondo) nelle frasi, nei posti liberi,
+   nei prezzi e negli orari; il riquadro della risposta in un blu notte unico. */
+:root { --blu-a: rgb(118 148 186 / .05); --blu-b: rgb(64 98 146 / .12); --blu-risposta: rgb(23 32 45 / .9); }
+.frasi li:nth-child(odd) button { background: var(--blu-a); }
+.frasi li:nth-child(even) button { background: var(--blu-b); }
+.risposta { background: var(--blu-risposta); }
+.posti li { padding-inline: 16px; }
+.posti li:nth-child(odd) { background: var(--blu-a); }
+.posti li:nth-child(even) { background: var(--blu-b); }
+.prezzi tbody tr:nth-child(odd) td { background: var(--blu-a); }
+.prezzi tbody tr:nth-child(even) td { background: var(--blu-b); }
+.orario:nth-child(odd) { background: linear-gradient(var(--blu-a), var(--blu-a)), var(--carta); }
+.orario:nth-child(even) { background: linear-gradient(var(--blu-b), var(--blu-b)), var(--carta); }
+/* frasi su due colonne (tablet): le righe si alternano a coppie, così le strisce restano orizzontali */
+@media (max-width: 1000px) and (min-width: 641px) {
+  .frasi li:nth-child(4n+1) button, .frasi li:nth-child(4n+2) button { background: var(--blu-a); }
+  .frasi li:nth-child(4n+3) button, .frasi li:nth-child(4n) button { background: var(--blu-b); }
+}
+.arrivare { background: var(--carta); border: 1px solid var(--linea); display: grid; grid-template-rows: auto 1fr; }
+.mappa { aspect-ratio: 4 / 3; background: var(--velluto); position: relative; overflow: hidden; }
+.mappa canvas { display: block; width: 100%; height: 100%; }
+.mappa.tre-d::after { content: attr(data-didascalia); position: absolute; left: 12px; bottom: 10px; right: 12px; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgb(255 255 255 / .7); }
+.mappa svg { display: block; width: 100%; height: 100%; }
+/* 7/11 la mappa vera di Asti (MapLibre): foto di riserva sotto, nomi e goccia come segni sulla mappa */
+.riserva-mappa { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mappa.mappa-vera .riserva-mappa { display: none; }
+.mappa.tre-d::after { z-index: 2; pointer-events: none; }
+.nome-mappa { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #f1ece2; background: rgb(14 15 17 / .72); border: 1px solid rgb(255 255 255 / .28); padding: 5px 8px; white-space: nowrap; transform: translateY(-38px); }
+.nome-mappa.qui { color: #1d1408; background: var(--ambra); border-color: transparent; transform: translateY(-52px); }
+.nome-citta { opacity: 0; transition: opacity .8s; } .mappa.in-citta .nome-citta { opacity: 1; }
+.segno-sede { width: 26px; height: 40px; position: relative; pointer-events: none; }
+.mappa-goccia { position: absolute; left: 3px; top: 0; width: 20px; height: 20px; background: var(--ambra); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 0 18px 4px rgb(232 168 92 / .45); }
+.mappa-goccia::after { content: ''; position: absolute; inset: 6px; border-radius: 50%; background: #1b1d21; }
+.mappa-anello { position: absolute; left: 50%; bottom: 0; width: 40px; height: 14px; margin-left: -20px; border: 2px solid rgb(232 168 92 / .7); border-radius: 50%; }
+@media (prefers-reduced-motion: no-preference) { .mappa-anello { animation: battito-mappa 2.4s ease-out infinite; } @keyframes battito-mappa { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } } }
+@media (max-width: 640px) { .vista-3d { right: auto; left: 12px; top: 30px; } }
+.mappa .maplibregl-ctrl-attrib { background: rgb(14 15 17 / .6); color: #aaa; font-size: 10px; } .mappa .maplibregl-ctrl-attrib a { color: #ccc; }
+.arrivare .corpo { padding: 20px 22px; display: grid; gap: 12px; align-content: start; }
+.arrivare h3 { font-size: 1.3rem; }
+.accesso { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; }
+.accesso li { padding-left: 22px; position: relative; font-size: .95rem; }
+.accesso li::before { content: ""; position: absolute; left: 0; top: .5em; width: 10px; height: 10px; background: var(--opale); transform: rotate(45deg); }
+
+/* 8. storia */
+.storia { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: start; }
+.tappe { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.tappe li { border-top: 3px solid var(--argento); padding-top: 12px; display: grid; gap: 4px; }
+.tappe b { font-family: var(--display); font-size: 2rem; font-weight: 500; color: var(--argento); font-variant-numeric: tabular-nums; }
+.tappe span { color: var(--tenue); font-size: .95rem; }
+
+/* 9. fondo */
+.fondo { margin-bottom: -28px; padding-block: 56px 90px; }
+.fondo-griglia { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); gap: 32px; }
+.fondo h3 { font-family: var(--testo); font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--metallo); margin-bottom: 10px; }
+.fondo p, .fondo li, .fondo dd { font-size: .92rem; color: var(--su-tenue); }
+.fondo .nome-f { font-family: var(--display); font-size: 1.6rem; color: var(--su); margin-bottom: 6px; }
+.fondo dl { margin: 0; display: grid; gap: 8px; }
+.fondo dt { font-weight: 700; font-size: .86rem; color: var(--su); }
+.fondo dd { margin: 0; }
+.fondo ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fondo a { color: var(--su); }
+.fondo .riga { margin-top: 36px; padding-top: 18px; border-top: 1px solid rgb(255 255 255 / .14); display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: .84rem; color: var(--su-tenue); }
+
+@media (max-width: 1100px) {
+  .cerca, .storia { grid-template-columns: minmax(0, 1fr); }
+  .griglia-spec { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .griglia-medici, .tre { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fondo-griglia { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .due, .griglia-medici, .tre, .tappe, .fondo-griglia, .accesso { grid-template-columns: minmax(0, 1fr); }
+  .posti li { grid-template-columns: minmax(0, 1fr) auto; }
+  .posti .durata { display: none; }
+  .posti .quando { grid-column: 1 / -1; }
+  .sez { padding-top: 64px; }
+}
+@media (max-width: 480px) { .griglia-spec { grid-template-columns: minmax(0, 1fr); } }
+
+@media (max-width: 1200px) { :root { --banda: 340px; } .voci nav { display: none; } .fila { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 820px) {
+  .barra { grid-template-columns: minmax(0, 1fr) auto; }
+  .referti, .tel { display: none; }
+  .apertura { grid-template-columns: minmax(0, 1fr); }
+  .sede { order: -1; min-height: 0; }
+  .sede .testo { padding-top: 220px; }
+  .sede.ok .testo { padding-top: 132px; padding-bottom: 64vw; }
+  .banda { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .corridoio { grid-column: 1 / -1; aspect-ratio: 16 / 10; min-height: 0; }
+  .posto { top: 12px; right: 12px; padding: 10px 12px; }
+}
+@media (max-width: 520px) {
+  .logo .parole small { display: none; }
+  .logo b { font-size: 1.2rem; }
+  .prenota { padding: 11px 16px; }
+  .banda, .fila { grid-template-columns: minmax(0, 1fr); }
+  .prova span { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sede > img { animation: respiro 26s ease-in-out infinite alternate; transform-origin: 60% 70%; }
+  @keyframes respiro { from { transform: scale(1); } to { transform: scale(1.06); } }
+}
+</style>
+
+<div class="velo" aria-hidden="true"></div><div class="brilla uno" aria-hidden="true"></div><div class="brilla due" aria-hidden="true"></div>
+<p class="dimostrativo">Progetto dimostrativo · dati di fantasia</p>
+<div class="cornice">
+  <header class="barra">
+    <a class="logo" href="#" aria-label="Corte dei Tigli, poliambulatorio">
+      <svg viewBox="0 0 48 48" aria-hidden="true" id="logo-segno"></svg>
+      <span class="parole"><b>Corte dei Tigli</b><small>Poliambulatorio</small></span>
+    </a>
+    <div class="voci">
+      <nav aria-label="Sezioni"><a href="#specialita">Specialità</a><a href="#medici">Medici</a><a href="#prezzi">Prezzi</a><a href="#orari">Come arrivare</a></nav>
+      <a class="referti" href="#">Referti on-line</a>
+      <span class="tel">0141 000 000<span>lun–sab, 7:00–20:00</span></span>
+      <a class="prenota" href="#">Prenota</a>
+    </div>
+  </header>
+
+  <main class="apertura">
+    <aside class="banda" aria-label="In evidenza">
+      <figure class="foto corridoio bordo-bianco" style="margin:0">
+        <canvas class="pietra" data-pietra="grafite" data-seme="7"></canvas>
+        <img src="img/corridoio.jpg" alt="Nel corridoio luminoso, un'operatrice indica a un paziente anziano la porta dello studio, mentre il medico lo ascolta" onload="this.parentNode.classList.add('ok')" onerror="this.remove()">
+        <div class="etichetta"><em>Foto 2 · in arrivo da GPT</em><b>Il corridoio</b><span>Luci calde. Un paziente chiede dove andare, un'operatrice indica con la mano aperta, il medico ascolta.</span></div>
+      </figure>
+      <a class="servizio bordo-bianco" href="#"><canvas class="pietra" data-pietra="ametista" data-seme="3"></canvas><small>Mano e polso</small><b>Tunnel carpale</b><span>Intervento in endoscopia, circa 20 minuti. A casa in giornata.</span></a>
+      <a class="servizio bordo-bianco" href="#"><canvas class="pietra" data-pietra="opale" data-seme="11"></canvas><small>Laboratorio</small><b>Esami del sangue</b><span>Senza prenotazione, lun–sab dalle 7:00. Referti on-line.</span></a>
+      <a class="servizio bordo-bianco" href="#"><canvas class="pietra" data-pietra="agata" data-seme="5"></canvas><small>Diagnostica</small><b>Ecografie</b><span>Il referto ti viene consegnato a fine esame.</span></a>
+    </aside>
+
+    <section class="foto sede" aria-label="La sede">
+      <canvas class="pietra" data-pietra="velata" data-seme="21"></canvas>
+      <img src="img/sede.jpg" alt="La sede del poliambulatorio, una casa chiara in mezzo al giardino di tigli, nella luce del pomeriggio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()">
+      <canvas class="pietra cielo" data-pietra="cielo" data-seme="21" aria-hidden="true"></canvas>
+      <div class="etichetta"><em>Foto 1 · in arrivo da GPT</em><b>La sede nel verde</b><span>Per ora, al suo posto, un'ametista velata sulla grafite, disegnata in codice.</span></div>
+      <div class="ombra"></div>
+      <a class="posto" href="#"><small>Primo posto libero</small><b>Oggi, 15:30</b><span>Ortopedia · Dott. Luca Moretti</span></a>
+      <div class="testo">
+        <h1>Specialisti vicino a casa, <em>con il tempo di ascoltarti.</em></h1>
+        <p class="sotto">Visite, esami e piccoli interventi in un'unica sede, in mezzo al verde. Via dei Tigli 12, Asti.</p>
+        <div class="azioni"><a class="prenota" href="#">Prenota una visita</a><a class="chiama" href="#">Chiama 0141 000 000</a></div>
+      </div>
+      <div class="fila">
+        <a class="servizio" href="#"><canvas class="pietra" data-pietra="diaspro" data-seme="2"></canvas><small>Cuore</small><b>Visita cardiologica</b><span>Con elettrocardiogramma, nello stesso appuntamento.</span></a>
+        <a class="servizio" href="#"><canvas class="pietra" data-pietra="labradorite" data-seme="9"></canvas><small>Riabilitazione</small><b>Fisioterapia</b><span>Palestra al piano terra, accesso senza gradini.</span></a>
+        <a class="servizio" href="#"><canvas class="pietra" data-pietra="ametista" data-seme="14"></canvas><small>Pelle</small><b>Controllo dei nei</b><span>Con dermatoscopio digitale e foto da confrontare negli anni.</span></a>
+        <a class="servizio" href="#"><canvas class="pietra" data-pietra="agata" data-seme="17"></canvas><small>Bambini</small><b>Visite pediatriche</b><span>Anche il sabato mattina, con una sala d'attesa tutta per loro.</span></a>
+      </div>
+    </section>
+  </main>
+
+  <section class="sez" id="cerca" aria-labelledby="t-cerca">
+    <div class="sez-testa">
+      <span class="occhio">Da dove cominciare</span>
+      <h2 id="t-cerca">Dimmi <em>cosa ti serve</em></h2>
+      <p>Scrivi con parole tue cosa senti, scegli una frase o tocca il punto del corpo. Ti diciamo a chi rivolgerti, quando c'è posto e quanto costa.</p>
+    </div>
+    <div class="tavola">
+      <div class="colonna-frasi">
+        <label class="parole"><span>Scrivilo con parole tue</span><input id="parole" type="text" placeholder="Per esempio: mi gira la testa da giorni" autocomplete="off"></label>
+        <p class="capito" id="capito" aria-live="polite"></p>
+        <p class="allarme" id="allarme" role="alert" hidden><b>Questi sintomi possono essere urgenti.</b> Non aspettare una visita: chiama subito il <a href="tel:112">112</a>.</p>
+        <ol class="frasi" role="group" aria-label="Oppure scegli la frase più vicina alla tua">
+          <li><button type="button" data-k="schiena" aria-pressed="true"><span class="num">01</span>Ho mal di schiena</button></li>
+          <li><button type="button" data-k="analisi" aria-pressed="false"><span class="num">02</span>Devo fare le analisi del sangue</button></li>
+          <li><button type="button" data-k="cuore" aria-pressed="false"><span class="num">03</span>Un controllo al cuore</button></li>
+          <li><button type="button" data-k="pelle" aria-pressed="false"><span class="num">04</span>Un neo che cambia</button></li>
+          <li><button type="button" data-k="bambini" aria-pressed="false"><span class="num">05</span>Mio figlio ha bisogno del pediatra</button></li>
+          <li><button type="button" data-k="ginocchio" aria-pressed="false"><span class="num">06</span>Dolore al ginocchio</button></li>
+          <li><button type="button" data-k="spalla" aria-pressed="false"><span class="num">07</span>Mi fa male la spalla</button></li>
+          <li><button type="button" data-k="collo" aria-pressed="false"><span class="num">08</span>Ho il collo bloccato</button></li>
+          <li><button type="button" data-k="pancia" aria-pressed="false"><span class="num">09</span>Mal di pancia che torna</button></li>
+          <li><button type="button" data-k="occhi" aria-pressed="false"><span class="num">10</span>Vedo meno bene</button></li>
+          <li><button type="button" data-k="testa" aria-pressed="false"><span class="num">11</span>Mal di testa frequente</button></li>
+        </ol>
+      </div>
+      <div class="sagoma sfalsata">
+        <!-- il corpo di luce (GPT di Franco, 7/11): l'immagine diventa una lastra in 3D che gira piano (codice «corpo3d»);
+             senza 3D resta l'immagine ferma. I punti sono in coordinate dell'immagine (200 x 300) e seguono la rotazione. -->
+        <div class="figura-luce">
+          <img class="corpo-fermo" src="img/corpo-luce.jpg" alt="">
+          <svg viewBox="0 0 200 300" role="group" aria-label="Figura del corpo con punti da toccare">
+            <g class="punto" tabindex="0" role="button" aria-label="Testa" aria-pressed="false" data-k="testa"><circle cx="105" cy="17" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Occhi" aria-pressed="false" data-k="occhi"><circle cx="96" cy="32" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Collo" aria-pressed="false" data-k="collo"><circle cx="100" cy="51" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Spalla" aria-pressed="false" data-k="spalla"><circle cx="69" cy="64.5" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Petto" aria-pressed="false" data-k="cuore"><circle cx="111" cy="80" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Pelle del braccio" aria-pressed="false" data-k="pelle"><circle cx="62.5" cy="101.5" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Pancia" aria-pressed="false" data-k="pancia"><circle cx="109.5" cy="115" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Schiena" aria-pressed="true" data-k="schiena"><circle cx="88" cy="127" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Braccio, per il prelievo" aria-pressed="false" data-k="analisi"><circle cx="136.5" cy="111" r="3.8"/></g>
+            <g class="punto" tabindex="0" role="button" aria-label="Ginocchio" aria-pressed="false" data-k="ginocchio"><circle cx="115" cy="195" r="3.8"/></g>
+          </svg>
+        </div>
+        <div class="scansione" aria-hidden="true"></div>
+        <p class="didascalia">Tocca un punto del corpo</p>
+      </div>
+      <div class="risposta" aria-live="polite">
+        <div class="volto"><img id="r-volto" alt=""><em>Foto del medico<br>da GPT</em></div>
+        <small id="r-frase"></small>
+        <h3 id="r-spec"></h3>
+        <p class="chi" id="r-chi"></p>
+        <div class="righe"><span>Primo posto: <b id="r-quando"></b></span><span>Prezzo: <b id="r-prezzo"></b></span></div>
+        <p class="cause" id="r-cause"></p>
+        <p class="nota" id="r-nota"></p>
+        <a class="bottone" href="#prenota">Prenota questa visita</a>
+      </div>
+      <svg class="filo" aria-hidden="true"><path d=""/><circle r="0"/></svg>
+    </div>
+  </section>
+
+  <section class="sez scura" id="posti" aria-labelledby="t-posti">
+    <div class="sez-testa">
+      <span class="occhio">Senza aspettare settimane</span>
+      <h2 id="t-posti">I prossimi <em>posti liberi</em></h2>
+      <p>Le prime visite disponibili nei prossimi giorni. Un tocco e il posto è tuo.</p>
+    </div>
+    <ul class="posti">
+      <li><span class="quando">Oggi · 15:30</span><span class="cosa"><b>Ortopedia</b><span>Dott. Luca Moretti</span></span><span class="durata">30 minuti</span><a class="bottone" href="#prenota">Prenota</a></li>
+      <li><span class="quando">Oggi · 17:15</span><span class="cosa"><b>Cardiologia con ECG</b><span>Dott. Paolo Rinaldi</span></span><span class="durata">40 minuti</span><a class="bottone" href="#prenota">Prenota</a></li>
+      <li><span class="quando">Domani · 9:00</span><span class="cosa"><b>Dermatologia</b><span>Dott.ssa Sara Colombo</span></span><span class="durata">30 minuti</span><a class="bottone" href="#prenota">Prenota</a></li>
+      <li><span class="quando">Domani · 11:30</span><span class="cosa"><b>Ecografia addominale</b><span>Dott.ssa Laura Gatti</span></span><span class="durata">20 minuti</span><a class="bottone" href="#prenota">Prenota</a></li>
+      <li><span class="quando">Sabato · 9:30</span><span class="cosa"><b>Pediatria</b><span>Dott.ssa Elena Ferri</span></span><span class="durata">30 minuti</span><a class="bottone" href="#prenota">Prenota</a></li>
+      <li><span class="quando">Lunedì · 8:30</span><span class="cosa"><b>Oculistica</b><span>Dott.ssa Chiara Bellini</span></span><span class="durata">40 minuti</span><a class="bottone" href="#prenota">Prenota</a></li>
+    </ul>
+    <p class="nota">Orari di esempio. Nel sito vero si aggiornano da soli dal sistema di prenotazione.</p>
+  </section>
+
+  <section class="sez" id="specialita" aria-labelledby="t-spec">
+    <div class="sez-testa">
+      <span class="occhio">Le specialità</span>
+      <h2 id="t-spec">Chi trovi <em>alla Corte dei Tigli</em></h2>
+      <p>Sotto ogni specialità, i disturbi più comuni per cui rivolgersi, detti con parole semplici.</p>
+    </div>
+    <div class="griglia-spec">
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/ortopedia.jpg" alt="La colonna vertebrale in trasparenza, con le vertebre in luce e i nervi" loading="lazy"><em>Ortopedia · La colonna</em></div><div class="corpo"><h3>Ortopedia</h3><ul><li>Mal di schiena che non passa</li><li>Dolore a ginocchio, spalla, anca</li><li>Traumi sportivi</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/cardiologia.jpg" alt="Un cuore in veli di luce rossa, con le coronarie che lo avvolgono" loading="lazy"><em>Cardiologia · Albero coronarico</em></div><div class="corpo"><h3>Cardiologia</h3><ul><li>Pressione alta</li><li>Palpitazioni, affanno</li><li>Controllo prima dello sport</li></ul></div></a>
+      <a class="spec sfalsata" href="#cerca"><div class="img"><img src="img/specialita/dermatologia.jpg" alt="Gli strati della pelle in trasparenza, con un follicolo pilifero e i piccoli vasi" loading="lazy"><em>Dermatologia · Gli strati della pelle</em></div><div class="corpo"><h3>Dermatologia</h3><ul><li>Nei che cambiano forma o colore</li><li>Acne, macchie, prurito</li><li>Controllo annuale della pelle</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/fisioterapia.jpg" alt="Un braccio che si alza, con i muscoli in fasci di luce verde salvia" loading="lazy"><em>Fisioterapia · Il gesto ritrovato</em></div><div class="corpo"><h3>Fisioterapia</h3><ul><li>Recupero dopo un intervento</li><li>Dolori di collo e schiena</li><li>Rieducazione dopo una frattura</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/laboratorio.jpg" alt="Globuli rossi e bianchi che scorrono dentro un vaso di luce" loading="lazy"><em>Laboratorio analisi · Il sangue da vicino</em></div><div class="corpo"><h3>Laboratorio analisi</h3><ul><li>Esami del sangue e delle urine</li><li>Senza prenotazione dalle 7:00</li><li>Referti on-line</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/diagnostica.jpg" alt="Un addome in trasparenza attraversato dalle onde dell'ecografia, con fegato e rene" loading="lazy"><em>Diagnostica per immagini · Dentro l’immagine</em></div><div class="corpo"><h3>Diagnostica per immagini</h3><ul><li>Ecografie</li><li>Radiografie</li><li>Referto a fine esame</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/pediatria.jpg" alt="La mano di un bambino, in trasparenza, che stringe il dito di un adulto" loading="lazy"><em>Pediatria · Una mano piccola</em></div><div class="corpo"><h3>Pediatria</h3><ul><li>Visite di controllo</li><li>Febbre e tosse che non passano</li><li>Anche il sabato mattina</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/oculistica.jpg" alt="Le fibre dell'iride in luce verde e oro, intorno alla pupilla" loading="lazy"><em>Oculistica · La trama dell’iride</em></div><div class="corpo"><h3>Oculistica</h3><ul><li>Vista che peggiora</li><li>Occhi secchi o arrossati</li><li>Controllo per la patente</li></ul></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/neurologia.jpg" alt="Il cervello in trasparenza, con le reti dei nervi che si accendono" loading="lazy"><em>Neurologia · Le reti del cervello</em></div><div class="corpo"><h3>Neurologia</h3><ul><li>Mal di testa frequente</li><li>Vertigini, formicolii</li><li>Memoria che fa cilecca</li></ul></div></a>
+    </div>
+  </section>
+
+  <section class="sez" id="medici" aria-labelledby="t-medici">
+    <div class="sez-testa">
+      <span class="occhio">I medici</span>
+      <h2 id="t-medici">Prima di entrare, <em>sai chi ti visita</em></h2>
+      <p>Volto, nome, specialità e iscrizione all'Ordine. Le foto vere arriveranno con le persone vere.</p>
+    </div>
+    <div class="griglia-medici">
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="howlite" data-seme="41"></canvas><div class="angolo sfalsata bl"><img src="img/medici/moretti.jpg" alt="Il dott. Luca Moretti nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>LM</b><em>Foto da GPT</em></div></div><div><h3>Dott. Luca Moretti</h3><p class="spec-m">Ortopedia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve martedì e giovedì.</p><p class="strumenti"><span>In studio</span>Ecografo muscolo-scheletrico; artroscopia per gli interventi in giornata.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="granato" data-seme="42"></canvas><div class="angolo sfalsata tl"><img src="img/medici/rinaldi.jpg" alt="Il dott. Paolo Rinaldi nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>PR</b><em>Foto da GPT</em></div></div><div><h3>Dott. Paolo Rinaldi</h3><p class="spec-m">Cardiologia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve lunedì e mercoledì.</p><p class="strumenti"><span>In studio</span>Ecocardiografo 3D, elettrocardiogramma, Holter cardiaco e pressorio.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="sole" data-seme="43"></canvas><div class="angolo sfalsata br"><img src="img/medici/colombo.jpg" alt="La dott.ssa Sara Colombo nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>SC</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Sara Colombo</h3><p class="spec-m">Dermatologia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve mercoledì e venerdì.</p><p class="strumenti"><span>In studio</span>Videodermatoscopio digitale con la mappa dei nei, da confrontare negli anni.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="rutilato" data-seme="47"></canvas><div class="angolo sfalsata tr"><img src="img/medici/ferrari.jpg" alt="Il dott. Marco Ferrari nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>MF</b><em>Foto da GPT</em></div></div><div><h3>Dott. Marco Ferrari</h3><p class="spec-m">Neurologia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve giovedì.</p><p class="strumenti"><span>In studio</span>Elettroencefalografo digitale ed elettromiografo.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="larimar" data-seme="44"></canvas><div class="angolo sfalsata bl"><img src="img/medici/gatti.jpg" alt="La dott.ssa Laura Gatti nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>LG</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Laura Gatti</h3><p class="spec-m">Diagnostica per immagini</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve tutti i giorni.</p><p class="strumenti"><span>In studio</span>Ecografo di fascia alta con elastosonografia; radiologia digitale a basse dosi.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="ambra" data-seme="45"></canvas><div class="angolo sfalsata br"><img src="img/medici/ferri.jpg" alt="La dott.ssa Elena Ferri nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>EF</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Elena Ferri</h3><p class="spec-m">Pediatria</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve martedì e sabato.</p><p class="strumenti"><span>In studio</span>Otoscopio digitale, saturimetro pediatrico, sala visite pensata per i bambini.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="malachite" data-seme="46"></canvas><div class="angolo sfalsata bl"><img src="img/medici/bellini.jpg" alt="La dott.ssa Chiara Bellini nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>CB</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Chiara Bellini</h3><p class="spec-m">Oculistica</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve lunedì e giovedì.</p><p class="strumenti"><span>In studio</span>Tomografia a coerenza ottica (OCT) e campo visivo computerizzato.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="crisocolla" data-seme="48"></canvas><div class="angolo sfalsata tr"><img src="img/medici/riva.jpg" alt="La dott.ssa Paola Riva in laboratorio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>PR</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Paola Riva</h3><p class="spec-m">Laboratorio analisi · biologa</p><p>Ordine Nazionale dei Biologi n. 0000 (di fantasia). Prelievi lun–sab dalle 7:00.</p><p class="strumenti"><span>In laboratorio</span>Analizzatori automatici per sangue e urine; referti on-line in giornata.</p></div></article>
+      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="giada" data-seme="49"></canvas><div class="angolo sfalsata br"><img src="img/medici/conti.jpg" alt="Il dott. Andrea Conti in palestra" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>AC</b><em>Foto da GPT</em></div></div><div><h3>Dott. Andrea Conti</h3><p class="spec-m">Fisioterapia · fisioterapista</p><p>Ordine TSRM e PSTRP di Asti, Albo dei Fisioterapisti n. 0000 (di fantasia).</p><p class="strumenti"><span>In palestra</span>Onde d'urto, laser ad alta potenza, attrezzi per la rieducazione.</p></div></article>
+    </div>
+  </section>
+
+  <section class="sez" id="prezzi" aria-labelledby="t-prezzi">
+    <div class="sez-testa">
+      <span class="occhio">Prezzi chiari</span>
+      <h2 id="t-prezzi">Quanto costa, <em>prima di prenotare</em></h2>
+      <p>Le visite e gli esami più richiesti, in regime privato.</p>
+    </div>
+    <div class="prezzi-wrap">
+      <table class="prezzi">
+        <thead><tr><th>Prestazione</th><th>Durata</th><th>Prezzo</th></tr></thead>
+        <tbody>
+          <tr><td>Visita ortopedica</td><td>30 minuti</td><td>110 €</td></tr>
+          <tr><td>Visita cardiologica con elettrocardiogramma</td><td>40 minuti</td><td>120 €</td></tr>
+          <tr><td>Controllo dei nei con dermatoscopio digitale</td><td>30 minuti</td><td>100 €</td></tr>
+          <tr><td>Ecografia addominale completa</td><td>20 minuti</td><td>90 €</td></tr>
+          <tr><td>Seduta di fisioterapia</td><td>45 minuti</td><td>50 €</td></tr>
+          <tr><td>Visita pediatrica</td><td>30 minuti</td><td>80 €</td></tr>
+          <tr><td>Visita oculistica completa</td><td>40 minuti</td><td>100 €</td></tr>
+          <tr><td>Intervento per tunnel carpale in endoscopia</td><td>circa 20 minuti</td><td>da 900 €</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">Prezzi di fantasia. Per gli esami in convenzione con il Servizio sanitario si paga solo il ticket, con l'impegnativa del medico di famiglia.</p>
+  </section>
+
+  <section class="sez" id="prenota" aria-labelledby="t-prenota">
+    <div class="sez-testa">
+      <span class="occhio">Come prenotare</span>
+      <h2 id="t-prenota">Tre modi, <em>scegli il tuo</em></h2>
+    </div>
+    <div class="tre">
+      <div class="via"><h3>Al telefono</h3><p class="grande">0141 000 000</p><p>Dal lunedì al sabato, dalle 7:00 alle 20:00. Risponde una persona, non un menu.</p></div>
+      <div class="via"><h3>On-line</h3><p>Scegli la visita, il giorno e l'ora. Ricevi la conferma per email e un promemoria il giorno prima.</p><a class="bottone" href="#posti">Prenota on-line</a></div>
+      <div class="via"><h3>Su WhatsApp</h3><p>Un numero per ogni reparto:</p><ul><li><span>Laboratorio</span><b>300 000 0001</b></li><li><span>Fisioterapia</span><b>300 000 0002</b></li><li><span>Segreteria</span><b>300 000 0003</b></li></ul><p class="nota">Numeri di fantasia.</p></div>
+    </div>
+  </section>
+
+  <section class="sez" id="orari" aria-labelledby="t-orari">
+    <div class="sez-testa">
+      <span class="occhio">Orari e come arrivare</span>
+      <h2 id="t-orari">Facile da raggiungere, <em>per tutti</em></h2>
+    </div>
+    <div class="due">
+      <div class="orari">
+        <div class="orario"><h3>Poliambulatorio</h3><dl><dt>Lunedì – venerdì</dt><dd>7:00 – 20:00</dd><dt>Sabato</dt><dd>7:30 – 14:00</dd></dl></div>
+        <div class="orario"><h3>Prelievi, senza prenotazione</h3><dl><dt>Lunedì – sabato</dt><dd>7:00 – 10:30</dd></dl></div>
+        <div class="orario"><h3>Fisioterapia</h3><dl><dt>Lunedì – venerdì</dt><dd>8:00 – 19:30</dd></dl></div>
+      </div>
+      <div class="arrivare">
+        <div class="mappa" aria-hidden="true">
+          <img class="riserva-mappa" src="img/mappa-asti.jpg" alt="">
+        </div>
+        <div class="corpo">
+          <h3>Via dei Tigli 12, Asti</h3>
+          <ul class="accesso">
+            <li>Parcheggio gratuito, 30 posti</li>
+            <li>3 posti per persone con disabilità</li>
+            <li>Ingresso senza gradini</li>
+            <li>Ascensore per il primo piano</li>
+            <li>Bagno accessibile a ogni piano</li>
+            <li>Sedia a rotelle all'ingresso</li>
+            <li>Autobus linea 3, fermata a 200 metri</li>
+            <li>Rastrelliera per le biciclette</li>
+          </ul>
+          <a href="https://www.google.com/maps" target="_blank" rel="noopener">Apri in Google Maps</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sez" id="storia" aria-labelledby="t-storia">
+    <div class="storia">
+      <div class="sez-testa">
+        <span class="occhio">La nostra storia</span>
+        <h2 id="t-storia">Da uno studio di due medici <em>a una casa per la salute</em></h2>
+        <p>Siamo cresciuti un passo alla volta, restando nello stesso quartiere. Le prestazioni di diagnostica e il laboratorio sono convenzionati con il Servizio sanitario.</p>
+      </div>
+      <ol class="tappe">
+        <li><b>1987</b><span>Due medici di famiglia aprono uno studio in centro.</span></li>
+        <li><b>2004</b><span>Arrivano il laboratorio analisi e le prime specialità.</span></li>
+        <li><b>2019</b><span>La nuova sede tra i tigli, con la palestra di fisioterapia.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <footer class="scura fondo" id="contatti">
+    <div class="fondo-griglia">
+      <div>
+        <p class="nome-f">Corte dei Tigli</p>
+        <p>Poliambulatorio<br>Via dei Tigli 12, 14100 Asti</p>
+        <p style="margin-top:12px">Telefono 0141 000 000<br>info@cortedeitigli.example</p>
+      </div>
+      <div>
+        <h3>Carta d'identità della struttura</h3>
+        <dl>
+          <dt>Direttore sanitario</dt><dd>Dott.ssa Anna Ferrero, medico chirurgo specialista in igiene e medicina preventiva, Ordine dei Medici di Asti n. 0000</dd>
+          <dt>Autorizzazione sanitaria</dt><dd>Comune di Asti, provvedimento n. 0000 del 00/00/0000</dd>
+          <dt>Accreditamento</dt><dd>Regione Piemonte, per diagnostica per immagini e laboratorio analisi</dd>
+          <dt>Dati fiscali</dt><dd>Corte dei Tigli S.r.l. · P.IVA 00000000000</dd>
+          <dt>Informazione sanitaria</dt><dd>Questo sito rispetta le linee guida sulla pubblicità dell'informazione sanitaria (artt. 55–57 del Codice di deontologia medica). Comunicazione all'Ordine dei Medici di Asti prot. n. 0000.</dd>
+        </dl>
+      </div>
+      <div>
+        <h3>Link utili</h3>
+        <ul>
+          <li><a href="https://www.salute.gov.it" target="_blank" rel="noopener">Ministero della Salute</a></li>
+          <li><a href="https://www.iss.it" target="_blank" rel="noopener">Istituto Superiore di Sanità</a></li>
+          <li><a href="https://www.fnomceo.it" target="_blank" rel="noopener">Federazione degli Ordini dei Medici</a></li>
+          <li><a href="https://www.regione.piemonte.it/web/temi/sanita" target="_blank" rel="noopener">Sanità in Piemonte</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="riga"><span>Privacy</span><span>Cookie</span><span>Accessibilità</span><span>Progetto dimostrativo: nomi, numeri e dati sono di fantasia.</span></div>
+  </footer>
+</div>
+
+<div class="prova" role="group" aria-label="Prova dei loghi"><span>Logo</span><button type="button" data-v="a" aria-pressed="true">A</button><button type="button" data-v="b" aria-pressed="false">B</button><button type="button" data-v="c" aria-pressed="false">C</button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="img/corpo-luce.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
+<script>
+/* ---------- loghi a foglia (niente croci: la rossa è protetta, la verde è delle farmacie) ---------- */
+const FOGLIA = 'M24 41 C 13 34, 6 25, 8.5 16.5 C 10.5 9.5, 18 8, 24 14 C 30 8, 37.5 9.5, 39.5 16.5 C 42 25, 35 34, 24 41 Z';
+const LOGHI = {
+  a: `<path d="${FOGLIA}" fill="var(--argento)"/>
+      <path d="M24 40 V 17 M24 30 L 15.5 23 M24 30 L 32.5 23 M24 23 L 17.5 17.5 M24 23 L 30.5 17.5" stroke="var(--ambra)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M24 41 C 24.5 44, 26 46, 28 47" stroke="var(--argento)" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  b: `<rect x="1" y="1" width="46" height="46" fill="var(--argento)"/>
+      <g transform="translate(9.6 8.4) scale(.6)"><path d="${FOGLIA}" fill="var(--ambra)"/>
+      <path d="M24 40 V 17 M24 30 L 15.5 23 M24 30 L 32.5 23" stroke="var(--argento)" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`,
+  c: `<circle cx="24" cy="24" r="22.5" fill="none" stroke="var(--argento)" stroke-width="1.6"/>
+      <g transform="translate(24 24)">
+        <g transform="translate(-7.2 -15.5) scale(.3)"><path d="${FOGLIA}" fill="var(--argento)"/></g>
+        <g transform="rotate(120) translate(-7.2 -15.5) scale(.3)"><path d="${FOGLIA}" fill="var(--ambra)"/></g>
+        <g transform="rotate(240) translate(-7.2 -15.5) scale(.3)"><path d="${FOGLIA}" fill="var(--opale)"/></g>
+      </g>`
+};
+const segno = document.getElementById('logo-segno');
+function scegli(v) { segno.innerHTML = LOGHI[v]; document.querySelectorAll('.prova button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); }
+document.querySelectorAll('.prova button').forEach(b => b.addEventListener('click', () => scegli(b.dataset.v)));
+scegli('a');
+
+/* ---------- minerali disegnati in codice ---------- */
+function caso(seme) { let s = (seme * 9301 + 49297) % 233280 || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const PIETRE = {
+  ametista(c, w, h, r, conLuce = true) {
+    const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#2c1a3d'); g.addColorStop(1, '#6d4a92'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    const n = Math.max(40, w * h / 1400);
+    for (let i = 0; i < n; i++) {
+      const x = r() * w, y = r() * h, rad = (8 + r() * 46) * (w > 600 ? 2 : 1), lati = 3 + Math.floor(r() * 4), a0 = r() * 6.3;
+      c.beginPath(); for (let k = 0; k < lati; k++) { const a = a0 + k / lati * 6.283 + r() * .5, rr = rad * (.6 + r() * .5); c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath();
+      c.fillStyle = `hsla(${262 + r() * 28},${30 + r() * 35}%,${28 + r() * 52}%,${.35 + r() * .5})`; c.fill();
+      c.strokeStyle = `rgba(255,240,255,${.08 + r() * .25})`; c.lineWidth = .6 + r(); c.stroke();
+    }
+    if (conLuce) luce(c, w * (.35 + r() * .3), h * (.45 + r() * .3), Math.min(w, h) * .7, 'rgba(255,170,80,.55)');
+  },
+  opale(c, w, h, r) {
+    const g = c.createLinearGradient(0, h, w, 0); g.addColorStop(0, '#1a2532'); g.addColorStop(1, '#2a3b48'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    for (let i = 0; i < 4; i++) luce(c, r() * w, r() * h, Math.min(w, h) * (.3 + r() * .4), 'rgba(235,240,255,.22)');
+    c.globalCompositeOperation = 'lighter';
+    const col = ['#33e0c4', '#4cf08a', '#2bb3ff', '#ff7ad9', '#ffd84d', '#8a7dff'];
+    const grappoli = 6 + Math.floor(w * h / 30000);
+    for (let i = 0; i < grappoli; i++) { const cx = r() * w, cy = r() * h, sp = 14 + r() * 60, tinta = col[Math.floor(r() * col.length)];
+      for (let k = 0; k < 140; k++) { const a = r() * 6.283, d = Math.pow(r(), 1.6) * sp; c.fillStyle = r() < .7 ? tinta : col[Math.floor(r() * col.length)]; c.globalAlpha = .35 + r() * .6; const s = 1 + r() * 3; c.fillRect(cx + Math.cos(a) * d, cy + Math.sin(a) * d, s, s); } }
+    c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+    vene(c, w, h, r, 4 + Math.floor(r() * 3), '#1e120a', '#8a5530');
+  },
+  agata(c, w, h, r) {
+    const pal = ['#f3e9de', '#e4d6ea', '#cdb6dd', '#efd2b0', '#b88a6a', '#f6eef4', '#dcc0a0', '#e9dcef'];
+    const cx = w * (.2 + r() * .6), cy = h * (.2 + r() * .6), R = Math.hypot(w, h) * .9, f1 = r() * 6.3, f2 = r() * 6.3;
+    let i = 0;
+    c.filter = 'blur(.8px)';
+    for (let rad = R; rad > 4; rad -= 1.5 + r() * 4.5) {
+      c.beginPath();
+      for (let a = 0; a <= 6.3; a += .08) { const rr = rad * (1 + .1 * Math.sin(3 * a + f1) + .05 * Math.sin(7 * a + f2)); c.lineTo(cx + Math.cos(a) * rr * 1.3, cy + Math.sin(a) * rr); }
+      c.closePath(); c.fillStyle = pal[i++ % pal.length]; c.fill();
+    }
+    c.filter = 'none';
+    luce(c, cx, cy, Math.min(w, h) * .4, 'rgba(255,255,255,.25)');
+    vene(c, w, h, r, 2, 'rgba(90,55,35,.25)', 'rgba(120,75,45,.45)', .3);
+  },
+  grafite(c, w, h, r) {
+    const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#1d1f22'); g.addColorStop(1, '#0e0f11'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    // grana minerale: scaglie irregolari senza direzione, a basso contrasto
+    const n = Math.max(120, w * h / 500);
+    for (let i = 0; i < n; i++) {
+      const x = r() * w, y = r() * h, rad = 3 + r() * (w > 500 ? 26 : 16), lati = 4 + Math.floor(r() * 3), a0 = r() * 6.3;
+      c.beginPath(); for (let k = 0; k < lati; k++) { const a = a0 + k / lati * 6.283 + r() * .6, rr = rad * (.5 + r() * .6); c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath();
+      const l = 14 + r() * 22; c.fillStyle = `hsla(200,6%,${l}%,${.35 + r() * .45})`; c.fill();
+      if (r() < .35) { c.strokeStyle = `rgba(210,220,226,${.06 + r() * .14})`; c.lineWidth = .6; c.stroke(); }
+    }
+    // riflesso di metallo verde-turchese, morbido e senza direzione
+    c.globalCompositeOperation = 'screen';
+    luce(c, w * (.3 + r() * .4), h * (.35 + r() * .3), Math.max(w, h) * .55, 'rgba(40,150,142,.32)');
+    luce(c, w * (.55 + r() * .3), h * (.6 + r() * .3), Math.max(w, h) * .3, 'rgba(120,220,210,.16)');
+    for (let i = 0; i < 180; i++) { c.fillStyle = `rgba(225,235,240,${.15 + r() * .5})`; const s = .7 + r() * 1.5; c.fillRect(r() * w, r() * h, s, s); }
+    c.globalCompositeOperation = 'source-over';
+    // la chiocciola in sezione, appena accennata
+    chiocciola(c, w * (.62 + r() * .2), h * (.42 + r() * .2), Math.max(w, h) * (.55 + r() * .2), r() * 6.3, .9);
+  },
+  diaspro(c, w, h, r) {
+    c.fillStyle = '#7c3a28'; c.fillRect(0, 0, w, h);
+    const col = ['rgba(168,84,48,.5)', 'rgba(96,40,30,.5)', 'rgba(204,138,82,.45)', 'rgba(232,186,128,.35)'];
+    for (let i = 0; i < 70; i++) luce(c, r() * w, r() * h, 20 + r() * 90, col[Math.floor(r() * col.length)]);
+    vene(c, w, h, r, 5, 'rgba(255,240,220,.15)', 'rgba(250,232,205,.7)', .4);
+  },
+  labradorite(c, w, h, r) {
+    c.fillStyle = '#1f2a33'; c.fillRect(0, 0, w, h);
+    c.globalCompositeOperation = 'lighter';
+    const col = ['rgba(40,170,190,.35)', 'rgba(70,110,230,.32)', 'rgba(230,180,70,.28)', 'rgba(60,200,140,.25)'];
+    for (let i = 0; i < 26; i++) { c.save(); c.translate(r() * w, r() * h); c.rotate(-.5 + r() * .3); c.scale(1, .18 + r() * .2); luce(c, 0, 0, 40 + r() * 140, col[Math.floor(r() * col.length)]); c.restore(); }
+    c.globalCompositeOperation = 'source-over';
+    vene(c, w, h, r, 6, 'rgba(10,14,18,.5)', 'rgba(10,14,18,.8)', .35);
+  },
+  /* il cielo sopra la foto della sede: solo il cristallo d ametista, senza bagliore; la fusione la fa il CSS (screen + sfumatura) */
+  cielo(c, w, h, r) { PIETRE.ametista(c, w, h, r, false); },
+  /* il rettangolo grande (7/11, Franco: «l'ametista in trasparenza, adesso spara negli occhi»):
+     sotto la grafite con una luce larga e fredda, sopra l'ametista a un terzo della forza, senza il bagliore arancione */
+  velata(c, w, h, r) {
+    const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#26292d'); g.addColorStop(.55, '#17191c'); g.addColorStop(1, '#0e0f11'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    c.globalCompositeOperation = 'screen';
+    luce(c, w * .72, h * .28, Math.max(w, h) * .6, 'rgba(200,210,218,.10)');
+    c.globalCompositeOperation = 'source-over';
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    PIETRE.ametista(cv.getContext('2d'), w, h, r, false);
+    c.globalAlpha = .33; c.filter = 'blur(.6px)'; c.drawImage(cv, 0, 0); c.filter = 'none'; c.globalAlpha = 1;
+    luce(c, w * .62, h * .48, Math.min(w, h) * .5, 'rgba(240,196,150,.07)');
+    for (let i = 0; i < 120; i++) { c.fillStyle = `rgba(232,236,240,${.08 + r() * .22})`; const s = .8 + r() * 1.6; c.fillRect(r() * w, r() * h, s, s); }
+  },
+  geode(c, w, h, r) {
+    PIETRE.agata(c, w, h, r);
+    const cx = w * .62, cy = h * .42, R = Math.min(w, h) * .42;
+    c.save(); c.beginPath();
+    for (let a = 0; a <= 6.3; a += .1) { const rr = R * (1 + .12 * Math.sin(4 * a) + .06 * Math.sin(9 * a)); c.lineTo(cx + Math.cos(a) * rr * 1.25, cy + Math.sin(a) * rr); }
+    c.closePath(); c.lineWidth = R * .08; c.strokeStyle = '#f2e8f2'; c.stroke(); c.clip();
+    c.translate(cx - R * 1.4, cy - R * 1.2); PIETRE.ametista(c, R * 2.8, R * 2.4, r); c.restore();
+  }
+};
+/* Sezione di nautilus: spirale logaritmica (cresce di circa 3 volte a ogni giro) con i setti curvi tra un giro e l'altro.
+   È autosimile: ogni camera è la copia più piccola della successiva. forza = quanto si vede (1 = appena). */
+function chiocciola(c, cx, cy, R, giro, forza = 1) {
+  const b = 0.1759, passi = 26, dT = 6.2832 / passi, tMin = -6.2832 * 3.2;
+  const P = t => { const rr = R * Math.exp(b * t); return [cx + Math.cos(t + giro) * rr, cy + Math.sin(t + giro) * rr]; };
+  c.save(); c.lineCap = 'round';
+  // camere: riempimenti tenuissimi alternati madreperla, turchese, ametista
+  const tinte = ['rgba(232,238,240,', 'rgba(95,216,201,', 'rgba(199,168,234,'];
+  for (let t = 0, i = 0; t - dT > tMin + 6.2832; t -= dT, i++) {
+    c.beginPath();
+    for (let u = t; u >= t - dT; u -= dT / 8) c.lineTo(...P(u));
+    for (let u = t - dT - 6.2832; u <= t - 6.2832; u += dT / 8) c.lineTo(...P(u));
+    c.closePath(); c.fillStyle = tinte[i % 3] + (.035 * forza) + ')'; c.fill();
+  }
+  // parete esterna della spirale
+  c.beginPath(); for (let t = tMin; t <= 0; t += .04) c.lineTo(...P(t));
+  c.strokeStyle = `rgba(236,242,244,${.28 * forza})`; c.lineWidth = Math.max(1, R / 260); c.stroke();
+  // setti: curve che uniscono un giro al precedente, piegate verso l'apertura
+  for (let t = 0; t > tMin + 6.2832; t -= dT) {
+    const [x1, y1] = P(t), [x2, y2] = P(t - 6.2832), [xm, ym] = P(t - 6.2832 * .5 + dT * .9);
+    const qx = (x1 + x2) / 2 * .55 + xm * .45, qy = (y1 + y2) / 2 * .55 + ym * .45;
+    c.beginPath(); c.moveTo(x1, y1); c.quadraticCurveTo(qx, qy, x2, y2);
+    c.strokeStyle = `rgba(226,236,238,${(.1 + .12 * Math.exp(b * t)) * forza})`; c.lineWidth = Math.max(.6, R * Math.exp(b * t) / 300); c.stroke();
+  }
+  c.restore();
+}
+function luce(c, x, y, rad, colore) { const g = c.createRadialGradient(x, y, 0, x, y, rad); g.addColorStop(0, colore); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(x - rad, y - rad, rad * 2, rad * 2); }
+function vene(c, w, h, r, quante, scuro, chiaro, spessore = 1) {
+  for (let v = 0; v < quante; v++) {
+    let x = r() * w, y = r() < .5 ? 0 : h, a = r() * 6.3; const pts = [[x, y]];
+    for (let k = 0; k < 40; k++) { a += (r() - .5) * .9; x += Math.cos(a) * w / 22; y += Math.sin(a) * h / 14 + (y < h / 2 ? 2 : -2); pts.push([x, y]); }
+    for (const [lw, col] of [[(6 + r() * 8) * spessore, scuro], [(2 + r() * 4) * spessore, chiaro]]) {
+      c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for (let k = 1; k < pts.length - 1; k++) c.quadraticCurveTo(pts[k][0], pts[k][1], (pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2);
+      c.lineWidth = lw; c.strokeStyle = col; c.lineCap = 'round'; c.stroke();
+    }
+  }
+}
+/* ---------- frattali delle specialità (7/11, Franco): colori tenui e diversi, ognuno legato al suo titolo ---------- */
+function hex(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; }
+function rampa(stops) {
+  const s = stops.map(hex);
+  return t => { t = Math.min(1, Math.max(0, t)) * (s.length - 1); const i = Math.min(s.length - 2, Math.floor(t)), f = t - i, a = s[i], b = s[i + 1]; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; };
+}
+function perPixel(c, w, h, f) {
+  const img = c.createImageData(w, h), d = img.data;
+  for (let y = 0, i = 0; y < h; y++) for (let x = 0; x < w; x++, i += 4) { const p = f(x, y); d[i] = p[0]; d[i + 1] = p[1]; d[i + 2] = p[2]; d[i + 3] = 255; }
+  c.putImageData(img, 0, 0);
+}
+const FRATTALI = {
+  /* Cardiologia: l'insieme di Mandelbrot girato con la punta in alto (il corpo principale è un cardioide, «a forma di cuore»),
+     con luce a rilievo: la normale viene dalla stima della distanza (u = z / z'), come nelle tecniche di Inigo Quilez e Fractalshades */
+  cuore(c, w, h) {
+    const col = rampa(['#fdf3ef', '#f6d9d1', '#eab3a8', '#f9e8e2']), s = h / 2.7, max = 300, lx = Math.cos(.8), ly = Math.sin(.8), h2 = 1.6;
+    perPixel(c, w, h, (x, y) => {
+      const cr = -(y - h * .5) / s - .7, ci = (x - w * .5) / s;
+      let zr = 0, zi = 0, dr = 0, di = 0, n = 0;
+      while (n < max && zr * zr + zi * zi < 1e4) {
+        const ndr = 2 * (zr * dr - zi * di) + 1, ndi = 2 * (zr * di + zi * dr); dr = ndr; di = ndi;
+        const t = zr * zr - zi * zi + cr; zi = 2 * zr * zi + ci; zr = t; n++;
+      }
+      if (n === max) { const v = .82 + .18 * Math.cos(cr * 3 + ci * 2); return [214 * v, 150 * v, 141 * v]; }
+      const dd = dr * dr + di * di; let luce = .5;
+      if (isFinite(dd) && dd > 0) { const ur = (zr * dr + zi * di) / dd, ui = (zi * dr - zr * di) / dd, ul = Math.hypot(ur, ui) || 1; luce = Math.max(0, ((ur / ul) * lx + (ui / ul) * ly + h2) / (1 + h2)); }
+      const nu = n + 1 - Math.log(Math.log(zr * zr + zi * zi) * .5) / Math.LN2, b = col(.5 - .5 * Math.cos(Math.log(Math.max(1, nu)) * 2.3)), k = .58 + .55 * luce;
+      return [Math.min(255, b[0] * k), Math.min(255, b[1] * k), Math.min(255, b[2] * k)];
+    });
+  },
+  /* Ortopedia: osso spugnoso, celle dentro celle (due trame di Voronoi), con le celle in leggera profondità */
+  osso(c, w, h, r) {
+    const P = n => Array.from({ length: n }, () => [r() * w, r() * h]);
+    const A = P(Math.round(w * h / 9000) + 10), B = P(Math.round(w * h / 900) + 40);
+    const kA = Math.sqrt(w * h / A.length), kB = Math.sqrt(w * h / B.length);
+    const due = (L, x, y) => { let a = 1e12, b = 1e12; for (const p of L) { const d = (p[0] - x) ** 2 + (p[1] - y) ** 2; if (d < a) { b = a; a = d; } else if (d < b) b = d; } return Math.sqrt(b) - Math.sqrt(a); };
+    const col = rampa(['#b89c78', '#d8c3a5', '#ebdfcd', '#fbf6ee']);
+    perPixel(c, w, h, (x, y) => {
+      const mA = due(A, x, y) / kA, mB = due(B, x, y) / kB;
+      if (mA < .07) return col(1 - mA * 1.2);
+      if (mB < .09) return col(.86 + mA * .2 - mB);
+      return col(.72 - Math.min(1, mB * 1.4) * .66);
+    });
+  },
+  /* Dermatologia: le trame di Turing (reazione e diffusione) che disegnano le macchie della pelle, con un rilievo morbido */
+  macchie(c, w, h, r) {
+    const gw = 130, gh = Math.max(40, Math.round(gw * h / w)), N = gw * gh;
+    let U = new Float32Array(N).fill(1), V = new Float32Array(N), U2 = new Float32Array(N), V2 = new Float32Array(N);
+    for (let s = 0; s < 40; s++) { const x0 = Math.floor(r() * (gw - 6)), y0 = Math.floor(r() * (gh - 6)); for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) { const i = (y0 + y) * gw + x0 + x; U[i] = .5; V[i] = .25; } }
+    const F = .0367, K = .0649;
+    for (let it = 0; it < 2800; it++) {
+      for (let y = 0; y < gh; y++) { const ys = y * gw, yu = ((y + gh - 1) % gh) * gw, yd = ((y + 1) % gh) * gw;
+        for (let x = 0; x < gw; x++) { const xl = (x + gw - 1) % gw, xr = (x + 1) % gw, i = ys + x;
+          const lu = .2 * (U[ys + xl] + U[ys + xr] + U[yu + x] + U[yd + x]) + .05 * (U[yu + xl] + U[yu + xr] + U[yd + xl] + U[yd + xr]) - U[i];
+          const lv = .2 * (V[ys + xl] + V[ys + xr] + V[yu + x] + V[yd + x]) + .05 * (V[yu + xl] + V[yu + xr] + V[yd + xl] + V[yd + xr]) - V[i];
+          const uvv = U[i] * V[i] * V[i];
+          U2[i] = U[i] + lu - uvv + F * (1 - U[i]); V2[i] = V[i] + .5 * lv + uvv - (F + K) * V[i]; } }
+      [U, U2] = [U2, U]; [V, V2] = [V2, V];
+    }
+    const piccola = document.createElement('canvas'); piccola.width = gw; piccola.height = gh;
+    const col = rampa(['#fcf1e9', '#f3d4bf', '#e2a888']), Vv = (x, y) => V[((y + gh) % gh) * gw + (x + gw) % gw];
+    perPixel(piccola.getContext('2d'), gw, gh, (x, y) => { const b = col(V[y * gw + x] * 3.2), rilievo = 1 + (Vv(x - 1, y - 1) - Vv(x + 1, y + 1)) * 2.2; return [Math.min(255, b[0] * rilievo), Math.min(255, b[1] * rilievo), Math.min(255, b[2] * rilievo)]; });
+    c.imageSmoothingQuality = 'high'; c.drawImage(piccola, 0, 0, w, h);
+  },
+  /* Fisioterapia: l'attrattore di Clifford reso come una «fractal flame» (Draves): densità logaritmica con correzione gamma
+     e colore dato dalla struttura (la direzione in cui si muove il punto), salvia e oro tenue */
+  movimento(c, w, h) {
+    const a = -1.4, b = 1.6, cc = 1.0, d = .7, dens = new Float32Array(w * h), tono = new Float32Array(w * h);
+    let x = .1, y = .1, max = 0; const giri = w * h * 4, s = Math.min(w / 4.4, h / 3.6);
+    for (let i = 0; i < giri; i++) {
+      const nx = Math.sin(a * y) + cc * Math.cos(a * x), ny = Math.sin(b * x) + d * Math.cos(b * y), dir = .5 + .5 * Math.sin(Math.atan2(ny - y, nx - x) * 2); x = nx; y = ny;
+      const px = Math.floor(w / 2 + x * s), py = Math.floor(h / 2 + y * s);
+      if (px >= 0 && px < w && py >= 0 && py < h) { const j = py * w + px, v = ++dens[j]; tono[j] += dir; if (v > max) max = v; }
+    }
+    const fondo = hex('#eef3ea'), salvia = hex('#6f8f6a'), oro = hex('#c3a35e'), lm = Math.log(1 + max);
+    perPixel(c, w, h, (px, py) => {
+      const j = py * w + px, n = dens[j]; if (!n) return fondo;
+      const al = Math.pow(Math.log(1 + n) / lm, 1 / 2.2), t = tono[j] / n, col = [salvia[0] + (oro[0] - salvia[0]) * t, salvia[1] + (oro[1] - salvia[1]) * t, salvia[2] + (oro[2] - salvia[2]) * t];
+      return [fondo[0] + (col[0] - fondo[0]) * al, fondo[1] + (col[1] - fondo[1]) * al, fondo[2] + (col[2] - fondo[2]) * al];
+    });
+  },
+  /* Laboratorio analisi: la guarnizione di Apollonio, cerchi che si toccano dentro altri cerchi, resi come perle (cellule in una goccia) */
+  cellule(c, w, h) {
+    c.fillStyle = '#e8f5f3'; c.fillRect(0, 0, w, h);
+    const R = Math.max(w, h) * .66, cx = w * .46, cy = h * .58, ri = R / (1 + 2 / Math.sqrt(3));
+    const O = { k: -1 / R, x: cx, y: cy };
+    const tre = [0, 1, 2].map(i => { const a = -1.2 + i * 2.0944; return { k: 1 / ri, x: cx + Math.cos(a) * (R - ri), y: cy + Math.sin(a) * (R - ri) }; });
+    const tinte = ['#cfeae6', '#bde1dc', '#e3f3f0', '#acd6d0', '#cde5ee', '#c4e5dc'];
+    const cerchio = (C, i) => {
+      const rad = 1 / C.k, t = tinte[i % tinte.length]; c.beginPath(); c.arc(C.x, C.y, rad, 0, 6.2832);
+      if (rad > 3) { const g = c.createRadialGradient(C.x - rad * .35, C.y - rad * .4, rad * .05, C.x, C.y, rad); g.addColorStop(0, '#ffffff'); g.addColorStop(.35, t); g.addColorStop(1, '#8fc4bd'); c.fillStyle = g; } else c.fillStyle = t;
+      c.fill(); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = Math.max(.4, Math.min(2.5, rad * .04)); c.stroke();
+    };
+    const riempi = (A, B, C, D, liv) => {
+      const k = 2 * (A.k + B.k + C.k) - D.k; if (k > 1.2) return;
+      const N = { k, x: (2 * (A.k * A.x + B.k * B.x + C.k * C.x) - D.k * D.x) / k, y: (2 * (A.k * A.y + B.k * B.y + C.k * C.y) - D.k * D.y) / k };
+      cerchio(N, liv); riempi(A, B, N, C, liv + 1); riempi(A, C, N, B, liv + 1); riempi(B, C, N, A, liv + 1);
+    };
+    tre.forEach(cerchio);
+    const [A, B, C] = tre;
+    riempi(A, B, C, O, 3); riempi(O, A, B, C, 1); riempi(O, B, C, A, 1); riempi(O, A, C, B, 1);
+  },
+  /* Diagnostica per immagini: l'albero bronchiale, rami che si dividono sempre in due, come in una radiografia del torace */
+  bronchi(c, w, h, r) {
+    const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#d3dce5'); g.addColorStop(1, '#b6c5d2'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    luce(c, w * .5, h * .55, Math.max(w, h) * .6, 'rgba(255,255,255,.4)');
+    c.lineCap = 'round'; c.shadowColor = 'rgba(255,255,255,.7)'; c.shadowBlur = 5;
+    const sp0 = w * .04;
+    const ramo = (x, y, ang, len, sp, liv) => {
+      const x2 = x + Math.cos(ang) * len, y2 = y + Math.sin(ang) * len, piega = (r() - .5) * len * .25;
+      c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo((x + x2) / 2 + Math.cos(ang + 1.57) * piega, (y + y2) / 2 + Math.sin(ang + 1.57) * piega, x2, y2);
+      c.strokeStyle = `rgba(248,251,253,${.45 + .5 * sp / sp0})`; c.lineWidth = sp; c.stroke();
+      if (liv === 0) return;
+      const ap = .3 + r() * .25;
+      ramo(x2, y2, ang - ap * (.8 + r() * .5), len * (.7 + r() * .14), sp * .7, liv - 1);
+      ramo(x2, y2, ang + ap * (.8 + r() * .5), len * (.7 + r() * .14), sp * .7, liv - 1);
+    };
+    c.beginPath(); c.moveTo(w / 2, -4); c.lineTo(w / 2, h * .28); c.strokeStyle = 'rgba(248,251,253,.95)'; c.lineWidth = sp0; c.stroke();
+    ramo(w / 2, h * .28, 1.5708 + .78, h * .24, sp0 * .8, 10);
+    ramo(w / 2, h * .28, 1.5708 - .78, h * .24, sp0 * .8, 10);
+    c.shadowBlur = 0;
+  },
+  /* Neurologia: neuroni, corpi luminosi da cui partono dendriti che si ramificano di continuo, con le sinapsi come puntini di luce */
+  neuroni(c, w, h, r) {
+    const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#f7f2e8'); g.addColorStop(1, '#e9dfcd'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    c.lineCap = 'round';
+    const ramo = (x, y, ang, len, sp, liv) => {
+      let px = x, py = y; c.beginPath(); c.moveTo(x, y);
+      for (let i = 0; i < 6; i++) { ang += (r() - .5) * .55; px += Math.cos(ang) * len / 6; py += Math.sin(ang) * len / 6; c.lineTo(px, py); }
+      c.strokeStyle = `rgba(146,108,60,${.22 + .5 * sp / 2.6})`; c.lineWidth = sp; c.stroke();
+      if (liv > 0 && sp > .35) { const n = r() < .7 ? 2 : 3; for (let k = 0; k < n; k++) ramo(px, py, ang + (r() - .5) * 1.3, len * (.62 + r() * .2), sp * .68, liv - 1); }
+    };
+    const corpi = Array.from({ length: 6 }, () => [w * (.1 + r() * .8), h * (.12 + r() * .76)]);
+    for (const [x, y] of corpi) { const n = 5 + Math.floor(r() * 4); for (let k = 0; k < n; k++) ramo(x, y, r() * 6.283, Math.min(w, h) * (.15 + r() * .12), 2.6, 5); }
+    for (let i = 0; i < 80; i++) luce(c, r() * w, r() * h, 2 + r() * 5, 'rgba(255,206,120,.55)');
+    for (const [x, y] of corpi) { luce(c, x, y, 26, 'rgba(255,214,140,.7)'); const s = c.createRadialGradient(x - 1.5, y - 1.5, .5, x, y, 6); s.addColorStop(0, '#fff3d6'); s.addColorStop(1, '#a9844e'); c.beginPath(); c.arc(x, y, 5.5, 0, 6.283); c.fillStyle = s; c.fill(); }
+  },
+  /* Pediatria: la spirale dei semi del girasole (ogni seme ruota di 137,5° sul precedente): la crescita. Semi in rilievo */
+  girasole(c, w, h) {
+    const cx = w * .6, cy = h * .52, sc = Math.max(w, h) * .022, n = Math.ceil((Math.hypot(w, h) / sc) ** 2), maxr = Math.hypot(w, h) * .75;
+    const col = rampa(['#d9a94a', '#e8c46e', '#f2da98', '#f8eac2']);
+    c.fillStyle = '#f8edc9'; c.fillRect(0, 0, w, h);
+    for (let i = 1; i < n; i++) {
+      const rr = sc * Math.sqrt(i), a = i * 2.399963, x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      if (x < -sc * 2 || x > w + sc * 2 || y < -sc * 2 || y > h + sc * 2) continue;
+      const t = Math.min(1, rr / maxr) * .85 + (i % 21 % 2 ? .1 : 0), b = col(t).map(Math.round), rad = sc * .8; // i semi della stessa spirale (ogni 21) un filo più chiari: le spirali si vedono
+      const g = c.createRadialGradient(x - rad * .3, y - rad * .35, rad * .1, x, y, rad); g.addColorStop(0, `rgb(${b.map(v => Math.min(255, v + 40))})`); g.addColorStop(1, `rgb(${b.map(v => v - 25)})`);
+      c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fillStyle = g; c.fill();
+      c.strokeStyle = 'rgba(255,250,235,.5)'; c.lineWidth = Math.max(.6, sc * .07); c.stroke();
+    }
+  },
+  /* Oculistica: un insieme di Julia a sei petali (z^6 + c), con fibre a raggiera (colore dalla direzione di fuga) e luce a rilievo */
+  iride(c, w, h) {
+    const col = rampa(['#f1f8f6', '#d6ece6', '#a9d4ca', '#7dbcb0', '#e6f3ef']), dentro = hex('#5e9d92'), s = Math.min(w, h) / 2.6, max = 90, cr = .72, ci = 0, lx = Math.cos(2.2), ly = Math.sin(2.2), h2 = 1.4;
+    perPixel(c, w, h, (x, y) => {
+      let zr = (x - w / 2) / s, zi = (y - h / 2) / s, dr = 1, di = 0, k = 0;
+      while (k < max && zr * zr + zi * zi < 64) {
+        let pr = zr, pi = zi; for (let p = 1; p < 5; p++) { const t = pr * zr - pi * zi; pi = pr * zi + pi * zr; pr = t; } // z^5
+        const ndr = 6 * (pr * dr - pi * di), ndi = 6 * (pr * di + pi * dr); dr = ndr; di = ndi;
+        const z6r = pr * zr - pi * zi, z6i = pr * zi + pi * zr; zr = z6r + cr; zi = z6i + ci; k++;
+      }
+      if (k === max) return dentro;
+      const dd = dr * dr + di * di; let luce = .5;
+      if (isFinite(dd) && dd > 0) { const ur = (zr * dr + zi * di) / dd, ui = (zi * dr - zr * di) / dd, ul = Math.hypot(ur, ui) || 1; luce = Math.max(0, ((ur / ul) * lx + (ui / ul) * ly + h2) / (1 + h2)); }
+      const nu = k + 1 - Math.log(Math.log(zr * zr + zi * zi) * .5) / Math.log(6), fibra = .5 + .5 * Math.sin(Math.atan2(zi, zr) * 3);
+      const b = col(.55 * (.5 - .5 * Math.cos(Math.sqrt(nu) * 1.6)) + .45 * fibra), m = .62 + .5 * luce;
+      return [Math.min(255, b[0] * m), Math.min(255, b[1] * m), Math.min(255, b[2] * m)];
+    });
+  }
+};
+
+/* ---------- fondo di grafite della pagina: luci larghe e morbide, una grana fine e due veli di brillantini che respirano ---------- */
+function grana(seme, punti) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 360; const c = cv.getContext('2d'), r = caso(seme);
+  if (!punti) { const img = c.createImageData(360, 360); for (let i = 0; i < img.data.length; i += 4) { const v = r() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 8; } c.putImageData(img, 0, 0); }
+  for (let i = 0; i < punti; i++) { const s = .5 + r() * 1.2; c.fillStyle = `rgba(224,231,235,${.1 + r() * .4})`; c.fillRect(r() * 360, r() * 360, s, s); }
+  return cv.toDataURL();
+}
+function fondoGrafite() {
+  const H = Math.max(1, document.body.scrollHeight), r = caso(77), strati = [];
+  const tinte = ['200,208,214', '200,208,214', '214,216,218', '111,211,198', '232,206,170'];
+  for (let y = 0; y < H; y += 380) for (let q = 0, quante = 1 + (r() < .55); q < quante; q++) {
+    const t = tinte[Math.floor(r() * tinte.length)], a = t[0] === '1' ? .04 : t[0] === '2' && t[1] === '3' ? .035 : .045 + r() * .05;
+    strati.push(`radial-gradient(ellipse ${Math.round(500 + r() * 700)}px ${Math.round(160 + r() * 340)}px at ${(r() * 100).toFixed(1)}% ${((y + r() * 380) / H * 100).toFixed(2)}%, rgba(${t},${a.toFixed(3)}), transparent 72%)`);
+  }
+  const velo = document.querySelector('.velo');
+  velo.style.backgroundImage = [`url(${grana(5, 0)})`, ...strati].join(',');
+  velo.style.backgroundRepeat = ['repeat', ...strati.map(() => 'no-repeat')].join(',');
+  velo.style.backgroundSize = ['360px 360px', ...strati.map(() => '100% 100%')].join(',');
+  document.querySelector('.brilla.uno').style.backgroundImage = `url(${grana(11, 60)})`;
+  document.querySelector('.brilla.due').style.backgroundImage = `url(${grana(23, 60)})`;
+}
+try { fondoGrafite(); } catch (e) {}
+
+/* ---------- le pietre dei medici (7/11, Franco: «sono uguali… sempre minerale, ma di altro tipo, differenzia»):
+   nove pietre tutte diverse, ognuna nella famiglia di colore del frattale della sua specialità, più tre di riserva.
+   Le trame si calcolano punto per punto a risoluzione ridotta (pietra levigata, morbida); i dettagli fini (aghi, scaglie, bolle) a piena risoluzione. ---------- */
+function rumore(r) {
+  const p = new Uint8Array(512), g = new Float32Array(256);
+  for (let i = 0; i < 256; i++) { p[i] = i; g[i] = r(); }
+  for (let i = 255; i > 0; i--) { const j = Math.floor(r() * (i + 1)), t = p[i]; p[i] = p[j]; p[j] = t; }
+  for (let i = 0; i < 256; i++) p[i + 256] = p[i];
+  const n = (x, y) => {
+    const xi = Math.floor(x), yi = Math.floor(y), X = xi & 255, Y = yi & 255, u0 = x - xi, v0 = y - yi, u = u0 * u0 * (3 - 2 * u0), v = v0 * v0 * (3 - 2 * v0);
+    const a = g[p[p[X] + Y]], b = g[p[p[X + 1] + Y]], c = g[p[p[X] + Y + 1]], d = g[p[p[X + 1] + Y + 1]];
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  };
+  n.fbm = (x, y, o = 4) => { let s = 0, A = .5, f = 1, t = 0; for (let k = 0; k < o; k++) { s += A * n(x * f + k * 17.3, y * f - k * 9.1); t += A; f *= 2.02; A *= .5; } return s / t; };
+  return n;
+}
+/* punti a caso in una griglia n×n che si ripete: distanza dal più vicino (f1), dal secondo (f2) e numero della cella */
+function celle(r, n) {
+  const pts = []; for (let i = 0; i < n * n; i++) pts.push([r(), r(), r()]);
+  return (x, y) => {
+    x *= n; y *= n; const xi = Math.floor(x), yi = Math.floor(y); let f1 = 9, f2 = 9, id = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const cx = xi + dx, cy = yi + dy, k = ((cx % n + n) % n) + ((cy % n + n) % n) * n, d = Math.hypot(cx + pts[k][0] - x, cy + pts[k][1] - y);
+      if (d < f1) { f2 = f1; f1 = d; id = pts[k][2]; } else if (d < f2) f2 = d;
+    }
+    return [f1, f2, id];
+  };
+}
+/* disegna un campo punto per punto: f(u, v, s, t) con u, v in unità della larghezza (niente deformazioni) e s, t da 0 a 1 */
+function campo(c, w, h, f, max = 520) {
+  const k = Math.min(1, max / Math.max(w, h)), W = Math.max(2, Math.round(w * k)), H = Math.max(2, Math.round(h * k));
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'), img = x.createImageData(W, H), d = img.data;
+  for (let j = 0, i = 0; j < H; j++) for (let q = 0; q < W; q++, i += 4) { const p = f(q / W, j / W, q / W, j / H); d[i] = p[0]; d[i + 1] = p[1]; d[i + 2] = p[2]; d[i + 3] = 255; }
+  x.putImageData(img, 0, 0); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; c.drawImage(cv, 0, 0, w, h);
+}
+const mescola = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const liscio = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+const PIETRE_MEDICI = {
+  /* Ortopedia (avorio, come l'osso spugnoso): howlite, bianco avorio con una rete di vene grigio-bruno */
+  howlite(c, w, h, r) {
+    const n = rumore(r), cel = celle(r, 5), cel2 = celle(r, 12), base = rampa(['#cfc6b6', '#e3dbcc', '#efe9de', '#f7f3eb']), vena = hex('#6a6157'), fine = hex('#9c9488');
+    campo(c, w, h, (u, v) => {
+      const wx = u + (n.fbm(u * 3, v * 3) - .5) * .2, wy = v + (n.fbm(u * 3 + 9, v * 3) - .5) * .2;
+      let col = base(n.fbm(u * 2.5, v * 2.5) * 1.4 - .15);
+      const [a1, b1] = cel(wx, wy), forza = liscio(.3, .7, n.fbm(u * 2.2 + 4, v * 2.2)), sp = .012 + .05 * n(u * 5, v * 5) * forza;
+      col = mescola(col, vena, (1 - liscio(0, sp, b1 - a1)) * (.25 + .65 * forza));
+      const [a2, b2] = cel2(wx * 1.1 + .3, wy * 1.1), e2 = b2 - a2;
+      return mescola(col, fine, (1 - liscio(0, .025, e2)) * .35 * n(u * 4, v * 4));
+    });
+    luce(c, w * .3, h * .25, Math.max(w, h) * .6, 'rgba(255,252,245,.22)');
+  },
+
+  /* Cardiologia (rosa del cuore, qui portato al rosso vino): granati in una roccia di mica grigio argento */
+  granato(c, w, h, r) {
+    const n = rumore(r), roccia = rampa(['#2b2b2f', '#3d3d42', '#56565b', '#6e6d70']);
+    campo(c, w, h, (u, v) => roccia(n.fbm(u * 2.2, v * 9, 5) * 1.25 - .1));
+    c.globalCompositeOperation = 'screen';
+    for (let i = 0; i < w * h / 260; i++) { c.fillStyle = `rgba(220,226,232,${.08 + r() * .4})`; const s = .6 + r() * 1.8; c.fillRect(r() * w, r() * h, s * 1.8, s * .7); }
+    c.globalCompositeOperation = 'source-over';
+    const quanti = 7 + Math.floor(r() * 5), U = Math.min(w, h);
+    for (let i = 0; i < quanti; i++) {
+      const R = U * (i === 0 ? .15 : .04 + r() * .07), x = R + r() * (w - 2 * R), y = R + r() * (h - 2 * R);
+      cristalloGranato(c, x, y, R, r() * 1.05, r);
+    }
+  },
+  /* Dermatologia (pesca): pietra del sole, arancio pesca traslucido con scaglie di rame che luccicano tutte nello stesso verso */
+  sole(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#a9542a', '#c96e3d', '#df8d5a', '#eeae82', '#f8d0b0']);
+    campo(c, w, h, (u, v) => col(n.fbm(u * 2 + n(u * 1.3, v * 1.3), v * 2, 5) * 1.45 - .2));
+    const ang = -.5 + r() * .3, U = Math.max(w, h) / 600;
+    for (let i = 0; i < w * h / 480; i++) {
+      const x = r() * w, y = r() * h; if (n.fbm(x / w * 3, y / w * 3) < .4 + r() * .2) continue;
+      const len = (3 + r() * 12) * U, sp = (1 + r() * 1.6) * U, chiaro = r() < .6; c.save(); c.translate(x, y); c.rotate(ang + (r() - .5) * .25);
+      c.globalCompositeOperation = chiaro ? 'lighter' : 'source-over';
+      c.fillStyle = chiaro ? `rgba(255,${150 + r() * 80 | 0},${90 + r() * 70 | 0},${.25 + r() * .55})` : `rgba(${120 + r() * 40 | 0},${48 + r() * 30 | 0},22,${.3 + r() * .4})`;
+      c.fillRect(-len / 2, -sp / 2, len, sp); c.restore();
+    }
+    c.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 14; i++) { const x = r() * w, y = r() * h, s = (4 + r() * 8) * U; luce(c, x, y, s, 'rgba(255,230,190,.55)'); c.fillStyle = 'rgba(255,245,225,.8)'; c.fillRect(x - s, y - .5, s * 2, 1); c.fillRect(x - .5, y - s * .6, 1, s * 1.2); }
+    c.globalCompositeOperation = 'source-over';
+    c.save(); c.translate(w * .5, h * .5); c.rotate(ang); c.scale(1, .28); luce(c, 0, 0, Math.max(w, h) * .55, 'rgba(255,236,214,.22)'); c.restore();
+  },
+
+  /* Neurologia (crema e bronzo, come i neuroni): quarzo fumé con aghi d'oro di rutilo che si ramificano */
+  rutilato(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#1c1916', '#2a2520', '#3e362e', '#584c40', '#76685a']);
+    campo(c, w, h, (u, v) => col(n.fbm(u * 1.6, v * 1.6, 5) * 1.4 - .18));
+    const d0 = r() * 3.14, dir = [d0, d0 + 1.05 + r() * .25, d0 - .95 - r() * .25], L = Math.max(w, h), U = L / 600;
+    const fascio = (sfoca, alfa) => {
+      for (let f = 0; f < 6; f++) {
+        const x = r() * w, y = r() * h, a = dir[f % 3] + (r() - .5) * .1, q = 2 + Math.floor(r() * 3), lun = L * (.45 + r() * .6);
+        for (let k = 0; k < q; k++) { const o = (k - q / 2) * (4 + r() * 14) * U, ox = -Math.sin(a) * o, oy = Math.cos(a) * o;
+          agoRutilo(c, x + ox, y + oy, a + (r() - .5) * .03, lun * (.6 + r() * .4), (.6 + r() * 1.6) * U * (sfoca ? 1.4 : 1), alfa * (.6 + r() * .4), r, !sfoca && r() < .35 ? 1 : 0); }
+      }
+    };
+    c.filter = `blur(${2.5 * U}px)`; fascio(true, .3); c.filter = 'none';
+    c.globalCompositeOperation = 'screen'; c.filter = `blur(${5 * U}px)`; fascio(false, .35); c.filter = 'none'; c.globalCompositeOperation = 'source-over';
+    fascio(false, .95);
+    c.save(); c.translate(w * .62, h * .3); c.rotate(-.8); c.scale(1, .2); luce(c, 0, 0, L * .5, 'rgba(255,240,220,.12)'); c.restore();
+  },
+
+  /* Diagnostica per immagini (azzurro grigio, come le onde dell'ecografia): larimar, azzurro con reti bianche come la luce sul fondo del mare */
+  larimar(c, w, h, r) {
+    const n = rumore(r), base = rampa(['#3d6f8f', '#5a8fb0', '#7fadc9', '#a9c9dc', '#d3e3ec']), bianco = [236, 242, 246];
+    campo(c, w, h, (u, v) => {
+      const q = n.fbm(u * 2.2, v * 2.2), wx = u + q * .35, wy = v + n.fbm(u * 2.2 + 6, v * 2.2) * .35;
+      let col = base(n.fbm(wx * 2.5, wy * 2.5, 5) * 1.5 - .2);
+      const rete = Math.abs(Math.sin((n.fbm(wx * 3.5, wy * 3.5, 5) + n.fbm(wx * 7, wy * 7) * .35) * 26));
+      col = mescola(col, bianco, (1 - liscio(.02, .22, rete)) * (.35 + .55 * n.fbm(u * 3 + 2, v * 3)));
+      return mescola(col, [28, 62, 84], liscio(.55, .8, n.fbm(u * 1.5 + 11, v * 1.5)) * .45);
+    }, 700);
+    c.save(); c.translate(w * .35, h * .22); c.rotate(-.5); c.scale(1, .25); luce(c, 0, 0, Math.max(w, h) * .5, 'rgba(255,255,255,.14)'); c.restore();
+  },
+
+
+  /* Pediatria (giallo burro): ambra color miele, con bollicine e dischetti dorati («spangles») */
+  ambra(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#8a4a10', '#b8701e', '#dc9a38', '#f0bf5e', '#f9dc94', '#fdeec2']), cx = .4 + r() * .2, cy = .4 + r() * .2;
+    campo(c, w, h, (u, v, s, t) => {
+      const d = Math.hypot(s - cx, (t - cy) * h / w), fl = n.fbm(u * 2 + n.fbm(u * 3, v * 3) * 1.5, v * 2);
+      return col(.95 - d * 1.15 + (fl - .5) * .55);
+    });
+    for (let i = 0; i < 26; i++) {
+      const x = r() * w, y = r() * h, R = 1.5 + Math.pow(r(), 2) * 9;
+      c.beginPath(); c.arc(x, y, R, 0, 6.283); c.fillStyle = 'rgba(255,240,200,.10)'; c.fill();
+      c.strokeStyle = 'rgba(120,60,10,.35)'; c.lineWidth = .8; c.stroke();
+      c.beginPath(); c.arc(x - R * .3, y - R * .3, R * .35, 0, 6.283); c.fillStyle = 'rgba(255,252,236,.7)'; c.fill();
+    }
+    for (let i = 0; i < 5; i++) {
+      const x = r() * w, y = r() * h, R = 8 + r() * 22, a = r() * 3.14;
+      c.save(); c.translate(x, y); c.rotate(a); c.scale(1, .35 + r() * .3);
+      luce(c, 0, 0, R, 'rgba(255,226,150,.55)');
+      c.strokeStyle = 'rgba(255,236,180,.45)'; c.lineWidth = .7;
+      for (let k = 0; k < 18; k++) { const b = k / 18 * 6.283; c.beginPath(); c.moveTo(Math.cos(b) * R * .15, Math.sin(b) * R * .15); c.lineTo(Math.cos(b) * R * .95, Math.sin(b) * R * .95); c.stroke(); }
+      c.restore();
+    }
+  },
+  /* Oculistica (verde acqua): malachite, bande concentriche attorno a tanti «occhi» */
+  malachite(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#0b3029', '#145446', '#22775f', '#3c9c80', '#76c6aa', '#b4e6d2']), cen = [];
+    for (let i = 0; i < 4; i++) cen.push([r(), r() * h / w]);
+    const fr = 11 + r() * 4;
+    campo(c, w, h, (u, v) => {
+      const wx = u + (n.fbm(u * 2.5, v * 2.5) - .5) * .12, wy = v + (n.fbm(u * 2.5 + 7, v * 2.5) - .5) * .12;
+      let s = 0; for (const [x, y] of cen) s += Math.exp(-14 * Math.hypot(wx - x, wy - y));
+      const d = -Math.log(s + 1e-9) / 14, b = Math.sin(d * fr * 6.283 + n.fbm(u * 9, v * 9) * 2.2);
+      let k = .5 + .5 * b; k = Math.pow(k, 1.2);
+      const scuro = liscio(.9, 1, -b) * .3;
+      return mescola(col(k * .6 + .22 + (n(u * 30, v * 30) - .5) * .08), [6, 30, 24], scuro);
+    });
+    luce(c, w * .35, h * .3, Math.max(w, h) * .45, 'rgba(220,255,240,.10)');
+  },
+  /* Laboratorio analisi (acqua, come le cellule): crisocolla, isole turchesi e acquamarina in una trama bruna */
+  crisocolla(c, w, h, r) {
+    const n = rumore(r), cel = celle(r, 6), pal = ['#2a9d96', '#43b8b6', '#1f7a8c', '#6fcdbd', '#3a8fb0', '#8fdccd'].map(hex), matrice = hex('#2a1d15'), bruno = hex('#5a3b25');
+    campo(c, w, h, (u, v) => {
+      const wx = u + (n.fbm(u * 3, v * 3) - .5) * .22, wy = v + (n.fbm(u * 3 + 5, v * 3) - .5) * .22;
+      const [a, b, id] = cel(wx, wy), e = b - a;
+      let col = id < .14 ? mescola(bruno, matrice, n(u * 12, v * 12)) : mescola(pal[Math.floor(id * 6) % 6], [240, 250, 248], (n.fbm(u * 8, v * 8) - .4) * .5);
+      col = mescola(col, [12, 40, 48], liscio(.1, .45, a) * .25);
+      return mescola(col, matrice, 1 - liscio(.015, .06 + .04 * n(u * 6, v * 6), e));
+    });
+    c.globalCompositeOperation = 'screen';
+    for (let i = 0; i < w * h / 450; i++) { c.fillStyle = `rgba(230,255,250,${.1 + r() * .35})`; const s = .6 + r() * 1.2; c.fillRect(r() * w, r() * h, s, s); }
+    c.globalCompositeOperation = 'source-over';
+  },
+  /* Fisioterapia (salvia, il movimento): giada levigata, con nubi che scorrono come fumo */
+  giada(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#4a644a', '#68845f', '#88a37f', '#a9bf9c', '#cbdbbd', '#e2ebd6']);
+    campo(c, w, h, (u, v, s, t) => {
+      const q = n.fbm(u * 2, v * 2), q2 = n.fbm(u * 2 + q * 2.4, v * 2 + q * 1.6, 5);
+      const glow = Math.exp(-(Math.pow(s - .45, 2) + Math.pow(t - .4, 2)) / .12) * .25;
+      return col(q2 * 1.35 - .2 + glow);
+    });
+    for (let i = 0; i < w * h / 900; i++) { c.fillStyle = `rgba(40,62,42,${.15 + r() * .35})`; c.beginPath(); c.arc(r() * w, r() * h, .5 + r() * 1.4, 0, 6.283); c.fill(); }
+    c.save(); c.translate(w * .3, h * .2); c.rotate(-.6); c.scale(1, .22); luce(c, 0, 0, Math.max(w, h) * .5, 'rgba(250,255,245,.28)'); c.restore();
+  },
+  /* riserva: occhio di tigre, fibre d'oro e bruno con una banda di luce che sembra muoversi */
+  tigre(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#24160a', '#563513', '#8f5c1b', '#c38d33', '#e6bd66', '#f6dc9c']);
+    campo(c, w, h, (u, v, s, t) => {
+      const y = v + (n.fbm(u * 1.5, v * 1.5) - .5) * .5 + .06 * Math.sin(u * 7);
+      const banda = n(y * 9, .3), fibre = (n(u * 3, y * 160) - .5) * .18, gatto = .5 + .5 * Math.sin(y * 13 + u * 1.2);
+      return col(banda * .55 + gatto * .45 + fibre);
+    });
+  },
+  /* riserva: lapislazzuli, blu profondo con nuvole di calcite e scaglie di pirite dorata */
+  lapis(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#14215a', '#1e3080', '#2a43a0', '#3d5bbd']), calcite = hex('#d7dbe6');
+    campo(c, w, h, (u, v) => {
+      const b = col(n.fbm(u * 3, v * 3, 5) * 1.3 - .15), k = liscio(.6, .64, n.fbm(u * 2.2 + 3, v * 2.2, 5) + (n(u * 14, v * 14) - .5) * .12);
+      return mescola(b, calcite, k * .85);
+    });
+    for (let i = 0; i < w * h / 520; i++) {
+      const x = r() * w, y = r() * h, s = .6 + Math.pow(r(), 3) * 3.5; c.fillStyle = `rgba(${220 + r() * 30 | 0},${180 + r() * 30 | 0},${90 + r() * 30 | 0},${.5 + r() * .5})`;
+      c.beginPath(); for (let k = 0; k < 5; k++) { const a = k / 5 * 6.283 + r(); c.lineTo(x + Math.cos(a) * s, y + Math.sin(a) * s); } c.fill();
+    }
+  },
+  /* riserva: ossidiana «fiocco di neve», nero lucido con fiocchi grigio chiaro */
+  ossidiana(c, w, h, r) {
+    const n = rumore(r), col = rampa(['#0a0b0c', '#131416', '#1d1f22', '#2a2c30']);
+    campo(c, w, h, (u, v) => col(n.fbm(u * 2, v * 2) * 1.2 - .1));
+    const quanti = 9 + Math.floor(r() * 6), U = Math.min(w, h);
+    for (let i = 0; i < quanti; i++) {
+      const x = r() * w, y = r() * h, R = U * (.03 + r() * .07);
+      luce(c, x, y, R * 1.2, 'rgba(200,204,208,.22)');
+      c.strokeStyle = 'rgba(214,218,222,.55)'; c.lineCap = 'round';
+      for (let k = 0; k < 22; k++) { const a = r() * 6.283, l = R * (.3 + r() * .7); c.lineWidth = .6 + r() * 1.2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); c.stroke(); }
+      c.beginPath(); c.arc(x, y, R * .18, 0, 6.283); c.fillStyle = 'rgba(226,229,232,.6)'; c.fill();
+    }
+    c.save(); c.translate(w * .7, h * .25); c.rotate(-.7); c.scale(1, .18); luce(c, 0, 0, Math.max(w, h) * .55, 'rgba(255,255,255,.12)'); c.restore();
+  }
+};
+function cristalloGranato(c, x, y, R, rot, r) {
+  luce(c, x + R * .12, y + R * .22, R * 1.5, 'rgba(0,0,0,.5)');
+  const pts = []; for (let k = 0; k < 6; k++) { const a = rot + k * Math.PI / 3, rr = R * (.94 + r() * .1); pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr * .95]); }
+  c.save(); c.beginPath(); pts.forEach(([px, py]) => c.lineTo(px, py)); c.closePath(); c.clip();
+  const g = c.createRadialGradient(x - R * .3, y - R * .35, R * .05, x + R * .05, y + R * .1, R * 1.15);
+  g.addColorStop(0, '#2a0711'); g.addColorStop(.5, '#4e0e1c'); g.addColorStop(.8, '#86202f'); g.addColorStop(1, '#b8404a');
+  c.fillStyle = g; c.fillRect(x - R * 1.2, y - R * 1.2, R * 2.4, R * 2.4);
+  c.strokeStyle = 'rgba(255,170,175,.10)'; c.lineWidth = Math.max(.6, R / 50);
+  const inn = pts.map(([px, py]) => [x + (px - x) * .45 - R * .06, y + (py - y) * .45 - R * .08]);
+  c.beginPath(); inn.forEach(([px, py]) => c.lineTo(px, py)); c.closePath(); c.stroke();
+  pts.forEach(([px, py], k) => { c.beginPath(); c.moveTo(px, py); c.lineTo(inn[k][0], inn[k][1]); c.stroke(); });
+  c.save(); c.translate(x - R * .38, y - R * .42); c.rotate(-.6); c.scale(1, .45); luce(c, 0, 0, R * .4, 'rgba(255,220,220,.45)'); c.restore();
+  c.restore();
+  c.beginPath(); pts.forEach(([px, py]) => c.lineTo(px, py)); c.closePath(); c.strokeStyle = 'rgba(255,190,190,.2)'; c.lineWidth = Math.max(.6, R / 45); c.stroke();
+}
+function agoRutilo(c, x, y, a, L, sp, alfa, r, rami) {
+  const x2 = x + Math.cos(a) * L, y2 = y + Math.sin(a) * L, linea = () => { c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke(); };
+  c.lineCap = 'round';
+  c.strokeStyle = `rgba(120,72,20,${alfa * .7})`; c.lineWidth = sp * 2; linea();
+  c.strokeStyle = `rgba(226,176,92,${alfa})`; c.lineWidth = sp; linea();
+  c.strokeStyle = `rgba(255,238,196,${alfa * .8})`; c.lineWidth = Math.max(.4, sp * .35); linea();
+  if (rami > 0) for (let k = 0; k < 2; k++) { const t = .25 + r() * .55; agoRutilo(c, x + (x2 - x) * t, y + (y2 - y) * t, a + (r() < .5 ? 1 : -1) * 1.047, L * (.25 + r() * .3), sp * .75, alfa * .9, r, rami - 1); }
+}
+Object.assign(PIETRE, PIETRE_MEDICI);
+
+function dipingi(cv) {
+  const fr = cv.dataset.frattale, dpr = fr ? 1 : Math.min(2, devicePixelRatio || 1);
+  const w = Math.max(1, Math.round(cv.clientWidth * dpr)), h = Math.max(1, Math.round(cv.clientHeight * dpr));
+  if (cv.width === w && cv.height === h) return;
+  cv.width = w; cv.height = h;
+  const c = cv.getContext('2d'), r = caso(+cv.dataset.seme || 1);
+  if (fr) FRATTALI[fr](c, w, h, r); else (PIETRE[cv.dataset.pietra] || PIETRE.agata)(c, w, h, r);
+}
+const tele = document.querySelectorAll('canvas.pietra');
+tele.forEach(dipingi);
+/* la foto della sede si ferma sopra le schede in fila, così l'edificio resta tutto visibile */
+function misuraFila() { const sede = document.querySelector('.sede'), fila = sede && sede.querySelector('.fila'); if (fila) sede.style.setProperty('--fila-h', (fila.offsetHeight + 12) + 'px'); }
+misuraFila(); tele.forEach(dipingi);
+let attesa; new ResizeObserver(() => { clearTimeout(attesa); attesa = setTimeout(() => { misuraFila(); tele.forEach(dipingi); }, 150); }).observe(document.body);
+
+/* ---------- dimmi cosa ti serve + dove ti fa male ---------- */
+const RISPOSTE = {
+  schiena: ['Ho mal di schiena', 'Ortopedia', 'Dott. Luca Moretti', 'Oggi, 15:30', '110 €', 'Se il dolore scende lungo la gamba, dillo quando prenoti: la visita può durare qualche minuto in più.', 'Cause più comuni: lombalgia muscolare, ernia del disco, sciatalgia. La diagnosi la fa il medico durante la visita.'],
+  analisi: ['Devo fare le analisi del sangue', 'Laboratorio analisi', 'Prelievo senza prenotazione', 'Domani dalle 7:00', 'secondo gli esami', 'Vieni a digiuno da 8 ore. Con l\'impegnativa del medico paghi solo il ticket.', 'Esami di base: emocromo, glicemia, colesterolo, funzionalità di fegato e reni. La diagnosi la fa il medico durante la visita.'],
+  cuore: ['Un controllo al cuore', 'Cardiologia con elettrocardiogramma', 'Dott. Paolo Rinaldi', 'Oggi, 17:15', '120 €', 'Porta gli ultimi esami e l\'elenco dei farmaci che prendi.', 'Il controllo valuta: ipertensione, aritmie, soffi cardiaci. La diagnosi la fa il medico durante la visita.'],
+  pelle: ['Un neo che cambia', 'Dermatologia', 'Dott.ssa Sara Colombo', 'Domani, 9:00', '100 €', 'Le foto dei nei restano nella tua scheda: così l\'anno prossimo si confrontano.', 'Il controllo distingue: neo benigno, neo atipico (displastico), melanoma. La diagnosi la fa il medico durante la visita.'],
+  bambini: ['Mio figlio ha bisogno del pediatra', 'Pediatria', 'Dott.ssa Elena Ferri', 'Sabato, 9:30', '80 €', 'Sala d\'attesa separata, con giochi e fasciatoio.', 'Motivi frequenti: otite, bronchiolite, controlli di crescita. La diagnosi la fa il medico durante la visita.'],
+  ginocchio: ['Dolore al ginocchio', 'Ortopedia', 'Dott. Luca Moretti', 'Oggi, 15:30', '110 €', 'Se hai radiografie o risonanze recenti, portale con te.', 'Cause più comuni: lesione del menisco, artrosi, tendinite rotulea. La diagnosi la fa il medico durante la visita.'],
+  occhi: ['Vedo meno bene', 'Oculistica', 'Dott.ssa Chiara Bellini', 'Lunedì, 8:30', '100 €', 'Se porti gli occhiali, portali. Dopo le gocce non guidare per qualche ora.', 'Cause più comuni: miopia o presbiopia, cataratta, secchezza oculare. La diagnosi la fa il medico durante la visita.'],
+  testa: ['Mal di testa frequente', 'Neurologia', 'Dott. Marco Ferrari', 'Giovedì, 10:30', '120 €', 'Annota per una settimana quando arriva il mal di testa: aiuta molto il medico.', 'Cause più comuni: cefalea tensiva, emicrania, cefalea a grappolo. La diagnosi la fa il medico durante la visita.']
+};
+/* ---------- la parte «intelligente» di Dimmi cosa ti serve (7/11, Franco: «la voglio rendere più intelligente») ---------- */
+Object.assign(RISPOSTE, {
+  spalla: ['Mi fa male la spalla', 'Ortopedia', 'Dott. Luca Moretti', 'Oggi, 15:30', '110 €', 'Se il dolore ti sveglia di notte o non riesci ad alzare il braccio, dillo quando prenoti.', 'Cause più comuni: tendinite della cuffia dei rotatori, borsite, spalla congelata. La diagnosi la fa il medico durante la visita.'],
+  collo: ['Ho il collo bloccato', 'Fisioterapia', 'Dott. Andrea Conti, fisioterapista', 'Domani, 8:00', '50 €', 'Porta eventuali radiografie. Se hai formicolii alle mani, dillo: prima può servire una visita.', 'Cause più comuni: contrattura muscolare, cervicalgia, postura al computer. La diagnosi la fa il medico durante la visita.'],
+  pancia: ['Mal di pancia che torna', 'Ecografia addominale', 'Dott.ssa Laura Gatti', 'Domani, 11:30', '90 €', 'Vieni a digiuno da 6 ore e con la vescica piena: l\'immagine è più chiara.', 'Cosa si guarda: fegato, colecisti (calcoli), reni, pancreas. La diagnosi la fa il medico durante la visita.']
+});
+const MEDICO_DI = { schiena: 'moretti', ginocchio: 'moretti', spalla: 'moretti', cuore: 'rinaldi', pelle: 'colombo', bambini: 'ferri', occhi: 'bellini', testa: 'ferrari', analisi: 'riva', collo: 'conti', pancia: 'gatti' };
+/* parole della gente → risposta (radici senza accenti; più parole trovate = più sicuro) */
+const PAROLE = {
+  schiena: ['schiena', 'lombar', 'lombi', 'sciatic', 'colpo della strega', 'osso sacro'],
+  ginocchio: ['ginocch', 'menisc', 'rotula', 'legamento crociato'],
+  spalla: ['spalla', 'spalle', 'braccio non si alza'],
+  collo: ['collo', 'cervical', 'torcicollo', 'nuca'],
+  cuore: ['cuore', 'palpitaz', 'pressione', 'tachicard', 'battito', 'affanno', 'aritmi'],
+  pelle: ['neo', 'nei ', 'macchi', 'pelle', 'prurito', 'acne', 'brufol', 'eczema', 'dermat'],
+  bambini: ['figlio', 'figlia', 'bambin', 'neonat', 'bimbo', 'bimba', 'pediatr'],
+  occhi: ['occhi', 'occhio', 'vista', 'vedo', 'lenti', 'occhiali', 'cataratt', 'miop', 'patente'],
+  testa: ['testa', 'emicrania', 'cefalea', 'vertigin', 'gira la testa', 'formicol', 'memoria', 'tremore'],
+  analisi: ['analisi', 'sangue', 'prelievo', 'esami', 'glicemia', 'colesterolo', 'urine', 'emocromo'],
+  pancia: ['pancia', 'stomaco', 'addom', 'gastrit', 'digest', 'fegato', 'colecist', 'gonfiore']
+};
+/* segnali d'allarme: qui il sito non consiglia una visita, dice di chiamare il 112 */
+const ALLARMI = [['petto', 'forte'], ['petto', 'stringe'], ['petto', 'oppressione'], ['dolore al petto'], ['non riesco a respirare'], ['non respiro'], ['manca il respiro'], ['svenut'], ['perso i sensi'], ['faccia storta'], ['bocca storta'], ['non riesco a parlare'], ['parlo male'], ['paralizz'], ['sangue nel vomito'], ['vomito sangue']];
+const pulisci = t => ' ' + t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ') + ' ';
+function capisci(testo) {
+  const t = pulisci(testo), avviso = document.getElementById('allarme'), esito = document.getElementById('capito');
+  const urgente = ALLARMI.some(gr => gr.every(p => t.includes(p)));
+  avviso.hidden = !urgente;
+  if (urgente || testo.trim().length < 3) { esito.textContent = urgente ? '' : ''; return; }
+  let meglio = null, punti = 0;
+  for (const [k, parole] of Object.entries(PAROLE)) { const n = parole.filter(p => t.includes(p)).length; if (n > punti) { punti = n; meglio = k; } }
+  if (meglio) { esito.textContent = 'Ho capito: ' + RISPOSTE[meglio][1] + '. Ecco a chi rivolgerti.'; rispondi(meglio); }
+  else esito.textContent = 'Non ho capito bene. Prova con altre parole, oppure chiamaci: 0141 000 000.';
+}
+(() => { const campo = document.getElementById('parole'); if (!campo) return; let t; campo.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => capisci(campo.value), 350); }); })();
+function rispondi(k) {
+  const [frase, spec, chi, quando, prezzo, nota, cause] = RISPOSTE[k];
+  document.getElementById('r-cause').textContent = cause;
+  const v = document.getElementById('r-volto'), cornice = v.parentNode; v.style.display = ''; cornice.classList.remove('ok'); v.onload = () => cornice.classList.add('ok'); v.onerror = () => { v.style.display = 'none'; cornice.classList.remove('ok'); }; v.src = 'img/medici/' + (MEDICO_DI[k] || k) + '.jpg';
+  document.getElementById('r-frase').textContent = frase;
+  document.getElementById('r-spec').textContent = spec;
+  document.getElementById('r-chi').textContent = chi;
+  document.getElementById('r-quando').textContent = quando;
+  document.getElementById('r-prezzo').textContent = prezzo;
+  document.getElementById('r-nota').textContent = nota;
+  document.querySelectorAll('.frasi button, .punto').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k));
+  requestAnimationFrame(tracciaFilo);
+}
+document.querySelectorAll('.frasi button').forEach(b => b.addEventListener('click', () => rispondi(b.dataset.k)));
+document.querySelectorAll('.punto').forEach(p => {
+  p.addEventListener('click', () => rispondi(p.dataset.k));
+  p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rispondi(p.dataset.k); } });
+});
+rispondi('schiena');
+/* il corpo di luce in 3D (7/11, Franco: «non possiamo rendere un po' più realistico questo pupazzo? farlo ruotare un pochettino?»).
+   L'immagine di GPT diventa una lastra in rilievo: dal contorno del corpo si calcola quanto è spesso in ogni punto (distanza dal bordo,
+   ammorbidita), la lastra si gonfia di conseguenza e gira piano di circa 15 gradi per lato; con il mouse segue il puntatore, col dito si trascina.
+   Una luce fissa dall'alto a sinistra dà volume quando gira. I punti rossi si ricalcolano a ogni fotogramma sulla superficie, e il filo li segue. */
+(function corpo3d() {
+  const box = document.querySelector('.figura-luce'); if (!box || !window.THREE || !window.CORPO_LUCE) return;
+  const svg = box.querySelector('svg');
+  const punti = [...svg.querySelectorAll('.punto circle')].map(c => ({ c, u: +c.getAttribute('cx') / 200, v: +c.getAttribute('cy') / 300 }));
+  let renderer; try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { return; }
+  const img = new Image(); img.onload = avvia; img.src = window.CORPO_LUCE;
+
+  function avvia() {
+    /* 1. profondità dal contorno, su una griglia piccola */
+    const GW = 100, GH = 150, FONDO = [0, 27, 36];
+    const cv = document.createElement('canvas'); cv.width = GW; cv.height = GH;
+    const c2 = cv.getContext('2d'); c2.drawImage(img, 0, 0, GW, GH);
+    const px = c2.getImageData(0, 0, GW, GH).data, d = new Float32Array(GW * GH);
+    for (let i = 0; i < GW * GH; i++) {
+      const r = px[i * 4] - FONDO[0], g = px[i * 4 + 1] - FONDO[1], b = px[i * 4 + 2] - FONDO[2];
+      d[i] = r * r + g * g + b * b > 1600 ? 1e6 : 0;
+    }
+    const D = Math.SQRT2, passa = (x, y, dx, dy, k) => { const xx = x + dx, yy = y + dy; return xx < 0 || yy < 0 || xx >= GW || yy >= GH ? 0 : d[yy * GW + xx] + k; };
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const i = y * GW + x; if (d[i]) d[i] = Math.min(d[i], passa(x, y, -1, 0, 1), passa(x, y, 0, -1, 1), passa(x, y, -1, -1, D), passa(x, y, 1, -1, D)); }
+    for (let y = GH - 1; y >= 0; y--) for (let x = GW - 1; x >= 0; x--) { const i = y * GW + x; if (d[i]) d[i] = Math.min(d[i], passa(x, y, 1, 0, 1), passa(x, y, 0, 1, 1), passa(x, y, 1, 1, D), passa(x, y, -1, 1, D)); }
+    /* da «tenda» a forme tonde: potenza 0,75 e tre passate di sfocatura */
+    for (let i = 0; i < d.length; i++) d[i] = d[i] > 0 ? Math.pow(d[i], 0.75) : 0;
+    const tmp = new Float32Array(d.length);
+    for (let n = 0; n < 3; n++) {
+      for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { let s = 0, m = 0; for (let k = -2; k <= 2; k++) { const xx = x + k; if (xx >= 0 && xx < GW) { s += d[y * GW + xx]; m++; } } tmp[y * GW + x] = s / m; }
+      for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { let s = 0, m = 0; for (let k = -2; k <= 2; k++) { const yy = y + k; if (yy >= 0 && yy < GH) { s += tmp[yy * GW + x]; m++; } } d[y * GW + x] = s / m; }
+    }
+    const SPESSORE = 0.03; /* unità del mondo per ogni passo di griglia (la lastra è larga 2) */
+    const prof = (u, v) => {
+      const x = Math.min(GW - 1.001, Math.max(0, u * (GW - 1))), y = Math.min(GH - 1.001, Math.max(0, v * (GH - 1)));
+      const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, i = y0 * GW + x0;
+      return ((d[i] * (1 - fx) + d[i + 1] * fx) * (1 - fy) + (d[i + GW] * (1 - fx) + d[i + GW + 1] * fx) * fy) * SPESSORE;
+    };
+
+    /* 2. la lastra */
+    const geo = new THREE.PlaneGeometry(2, 3, 140, 210), pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) pos.setZ(i, prof((pos.getX(i) + 1) / 2, (1.5 - pos.getY(i)) / 3));
+    geo.computeVertexNormals();
+    const tex = new THREE.Texture(img); tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.needsUpdate = true;
+    const mat = new THREE.ShaderMaterial({
+      transparent: true,
+      uniforms: { mappa: { value: tex }, fondo: { value: new THREE.Vector3(FONDO[0] / 255, FONDO[1] / 255, FONDO[2] / 255) } },
+      vertexShader: 'varying vec2 vUv; varying vec3 vN; void main() { vUv = uv; vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: `uniform sampler2D mappa; uniform vec3 fondo; varying vec2 vUv; varying vec3 vN;
+        void main() {
+          vec3 c = texture2D(mappa, vUv).rgb;
+          float a = smoothstep(0.035, 0.2, distance(c, fondo));
+          vec3 L = normalize(vec3(-0.45, 0.35, 1.0));
+          float luce = 0.78 + 0.3 * max(dot(normalize(vN), L), 0.0);
+          gl_FragColor = vec4(max(c - fondo * (1.0 - a), 0.0) * luce * 0.95, a);
+        }`,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    const scene = new THREE.Scene(); scene.add(mesh);
+    const cam = new THREE.PerspectiveCamera(24, 2 / 3, 0.1, 50); cam.position.z = 7.3;
+    renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1)); renderer.setClearColor(0x000000, 0);
+    box.insertBefore(renderer.domElement, svg); box.classList.add('tre-d');
+    const misura = () => { const w = Math.max(1, box.clientWidth), h = Math.max(1, box.clientHeight); renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    misura(); addEventListener('resize', misura);
+
+    /* 3. il movimento: da solo oscilla piano; il mouse lo fa voltare verso di sé; col dito si trascina */
+    const calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let ang = 0, meta = 0, incl = 0, metaIncl = 0, sopra = false, presa = null, ultimo = -1e9, vivo = true;
+    box.addEventListener('pointermove', e => {
+      const r = box.getBoundingClientRect();
+      if (presa) { meta = Math.max(-0.45, Math.min(0.45, presa.ang + (e.clientX - presa.x) / r.width * 1.3)); ultimo = performance.now(); return; }
+      if (e.pointerType !== 'mouse') return;
+      sopra = true; meta = ((e.clientX - r.left) / r.width - 0.5) * 0.62; metaIncl = ((e.clientY - r.top) / r.height - 0.5) * 0.1;
+    });
+    box.addEventListener('pointerleave', () => { sopra = false; ultimo = performance.now(); metaIncl = 0; });
+    box.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') presa = { x: e.clientX, ang: meta }; });
+    addEventListener('pointerup', () => { if (presa) { presa = null; ultimo = performance.now(); } });
+    addEventListener('pointercancel', () => { presa = null; });
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(en => { vivo = en.isIntersecting; })).observe(box);
+
+    const v3 = new THREE.Vector3();
+    function disegna(t) {
+      if (!sopra && !presa && t - ultimo > 2200) { meta = calmo ? 0 : 0.26 * Math.sin(t / 1000 * Math.PI * 2 / 11); metaIncl = 0; }
+      ang += (meta - ang) * 0.06; incl += (metaIncl - incl) * 0.06;
+      mesh.rotation.y = ang; mesh.rotation.x = incl; mesh.updateMatrixWorld();
+      renderer.render(scene, cam);
+      for (const p of punti) {
+        v3.set(p.u * 2 - 1, 1.5 - p.v * 3, prof(p.u, p.v) + 0.03).applyMatrix4(mesh.matrixWorld).project(cam);
+        p.c.setAttribute('cx', ((v3.x + 1) / 2 * 200).toFixed(2)); p.c.setAttribute('cy', ((1 - v3.y) / 2 * 300).toFixed(2));
+      }
+      tracciaFilo();
+    }
+    disegna(0); /* il primo fotogramma subito, senza aspettare (lezione del 7/11 sulla mappa) */
+    (function giro(t) { if (vivo) disegna(t); requestAnimationFrame(giro); })(0);
+  }
+})();
+/* il filo rosso: dal punto toccato sulla figura al riquadro della risposta */
+function tracciaFilo() {
+  const tav = document.querySelector('.tavola'), filo = tav && tav.querySelector('.filo'); if (!filo) return;
+  const punto = tav.querySelector('.punto[aria-pressed="true"] circle'), risp = tav.querySelector('.risposta'), path = filo.querySelector('path'), dot = filo.querySelector('circle');
+  if (!punto || getComputedStyle(filo).display === 'none') { path.setAttribute('d', ''); dot.setAttribute('r', 0); return; }
+  const T = tav.getBoundingClientRect(), P = punto.getBoundingClientRect(), R = risp.getBoundingClientRect();
+  const px = P.left + P.width / 2 - T.left, py = P.top + P.height / 2 - T.top, rx = R.left - T.left, ry = Math.min(Math.max(py, R.top - T.top + 30), R.bottom - T.top - 30);
+  path.setAttribute('d', `M${px + P.width / 2} ${py} C${px + 70} ${py}, ${rx - 70} ${ry}, ${rx} ${ry}`);
+  dot.setAttribute('cx', rx); dot.setAttribute('cy', ry); dot.setAttribute('r', 3);
+}
+addEventListener('resize', () => requestAnimationFrame(tracciaFilo));
+document.fonts && document.fonts.ready.then(() => requestAnimationFrame(tracciaFilo));
+/* ---------- la mappa vera di Asti in 3D (7/11, Franco: «quella mappina 3D non si può migliorare? Le case del centro sono tutte un grumo tondo»;
+   nel Tavolo ha scelto la B, notturna: «senza linee gialle frastagliate però, o rotte o spezzettate»).
+   Dati di OpenStreetMap da OpenFreeMap (gratis, senza chiave), disegnati con MapLibre e colori nostri: niente stile Google.
+   Case grafite in 3D (altezza da OSM; se manca, un'altezza credibile che varia da casa a casa); in ambra solo i corsi e le vie principali,
+   linee continue con un alone leggero; vie piccole in grafite appena visibile, vicoli e sentieri tolti, binari in una linea continua tenue.
+   Vicino alla sede la vista gira piano; poco dopo che la mappa entra nello schermo sale e inquadra la città; il pulsante riporta giù.
+   Finché la mappa non è pronta (o se non arriva) resta la foto ferma della stessa mappa. ---------- */
+function mappaAsti(box, opzioni) {
+  opzioni = opzioni || {};
+  if (!box || !window.maplibregl) return null;
+  const SEDE = [8.2180, 44.9070], CITTA = [8.2084, 44.9024];
+  const altezza = ['coalesce', ['get', 'render_height'], 8];
+  const principali = ['all', ['in', ['get', 'class'], ['literal', ['primary', 'secondary', 'tertiary', 'trunk', 'motorway']]], ['!=', ['get', 'brunnel'], 'tunnel']];
+  const largo = (a, b) => ['interpolate', ['exponential', 1.6], ['zoom'], 12, a, 17, b];
+  const stile = {
+    version: 8,
+    sources: { osm: { type: 'vector', url: 'https://tiles.openfreemap.org/planet', attribution: '© OpenStreetMap' } },
+    layers: [
+      { id: 'fondo', type: 'background', paint: { 'background-color': '#111215' } },
+      { id: 'verde', type: 'fill', source: 'osm', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['grass', 'wood', 'farmland']]], paint: { 'fill-color': '#16191a' } },
+      { id: 'parchi', type: 'fill', source: 'osm', 'source-layer': 'park', paint: { 'fill-color': '#16191a' } },
+      { id: 'acqua', type: 'fill', source: 'osm', 'source-layer': 'water', paint: { 'fill-color': '#0f1922' } },
+      { id: 'fiumi', type: 'line', source: 'osm', 'source-layer': 'waterway', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#1a2c3b', 'line-width': largo(1.5, 8) } },
+      { id: 'vie', type: 'line', source: 'osm', 'source-layer': 'transportation', filter: ['==', ['get', 'class'], 'minor'], layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#26282c', 'line-width': largo(0.4, 6) } },
+      { id: 'binari', type: 'line', source: 'osm', 'source-layer': 'transportation', filter: ['==', ['get', 'class'], 'rail'], layout: { 'line-join': 'round' }, paint: { 'line-color': '#2a2b2e', 'line-width': largo(0.8, 2.5) } },
+      { id: 'alone', type: 'line', source: 'osm', 'source-layer': 'transportation', filter: principali, layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': 'rgba(214,150,70,0.13)', 'line-blur': 6, 'line-width': largo(5, 34) } },
+      { id: 'corsi', type: 'line', source: 'osm', 'source-layer': 'transportation', filter: principali, layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#93693a', 'line-width': largo(1, 11) } },
+      { id: 'case', type: 'fill-extrusion', source: 'osm', 'source-layer': 'building', minzoom: 13,
+        paint: { 'fill-extrusion-color': ['interpolate', ['linear'], altezza, 0, '#24272c', 12, '#30343a', 30, '#3e434a'],
+          'fill-extrusion-height': ['case', ['<=', altezza, 5], ['+', 7, ['%', ['to-number', ['id'], 3], 9]], altezza],
+          'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0], 'fill-extrusion-opacity': 0.96 } }
+    ],
+    light: { anchor: 'viewport', color: '#e9eef5', intensity: 0.32, position: [1.4, 200, 35] }
+  };
+  const fermo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let map;
+  try { map = new maplibregl.Map({ container: box, style: stile, center: SEDE, zoom: 16.4, pitch: 58, bearing: -20, interactive: false, attributionControl: false, fadeDuration: 0, preserveDrawingBuffer: !!opzioni.foto }); }
+  catch (e) { return null; }
+  map.addControl(new maplibregl.AttributionControl({ compact: false }), 'top-left');
+  const segno = (lnglat, html, cls) => { const e = document.createElement('div'); e.className = cls; e.innerHTML = html; return new maplibregl.Marker({ element: e, anchor: 'bottom' }).setLngLat(lnglat).addTo(map); };
+  segno(SEDE, '<span class="mappa-goccia"></span><span class="mappa-anello"></span>', 'segno-sede');
+  segno(SEDE, '<span class="nome-mappa qui">Corte dei Tigli</span>', 'nome-sede');
+  [[[8.2072, 44.9001], 'Centro storico · 1 km'], [[8.1980, 44.9008], 'Il duomo'], [[8.2073, 44.8960], 'Stazione'], [[8.2195, 44.8891], 'Il Tanaro']]
+    .forEach(([p, t]) => segno(p, '<span class="nome-mappa">' + t + '</span>', 'nome-citta'));
+  let verso = opzioni.vista === 'citta' ? 1 : 0;
+  const vai = subito => {
+    box.classList.toggle('in-citta', verso === 1);
+    const stretto = box.clientWidth < 500; /* telefono: la città centrata più verso la sede, che non deve uscire */
+    const meta = verso ? (stretto ? { center: [8.2138, 44.9058], zoom: 14.02, pitch: 40, bearing: -10 } : { center: CITTA, zoom: 14.02, pitch: 44, bearing: -10 }) : { center: SEDE, zoom: 16.4, pitch: 58, bearing: map.getBearing() };
+    if (subito || fermo) map.jumpTo(meta); else map.flyTo(Object.assign(meta, { duration: 5000, curve: 1.3, essential: true }));
+    if (opzioni.dici) opzioni.dici(verso);
+  };
+  map.on('load', () => {
+    box.classList.add('mappa-vera'); vai(true);
+    if (!fermo && !opzioni.foto) { let ultimo = 0; (function gira(t) { if (!map.isMoving() && verso === 0 && box.dataset.visibile !== '0') map.setBearing(map.getBearing() + Math.min(50, t - ultimo) * 0.004); ultimo = t; requestAnimationFrame(gira); })(0); }
+  });
+  return { cambia: () => { verso = verso ? 0 : 1; vai(false); }, sali: () => { if (verso === 0) { verso = 1; vai(false); } }, map };
+}
+/* il pulsante, la didascalia e lo «stacco» verso l'alto 3,5 s dopo che la mappa entra nello schermo */
+(function () {
+  const box = document.querySelector('.mappa'); if (!box) return;
+  const tasto = document.createElement('button'); tasto.type = 'button'; tasto.className = 'vista-3d';
+  const dici = v => { tasto.textContent = v ? 'Torna alla sede' : 'Vedi la città'; box.dataset.didascalia = v ? 'La città dall’alto · la goccia ambra è il poliambulatorio' : 'Il quartiere visto dall’alto · la goccia ambra è il poliambulatorio'; };
+  const m = mappaAsti(box, { dici }); if (!m) return;
+  box.appendChild(tasto); dici(0); box.classList.add('tre-d');
+  let auto = true, attesa = null;
+  tasto.addEventListener('click', () => { auto = false; clearTimeout(attesa); m.cambia(); });
+  new IntersectionObserver(e => { const vis = e[0].isIntersecting; box.dataset.visibile = vis ? '1' : '0'; if (vis && auto && !attesa) attesa = setTimeout(() => { if (auto) m.sali(); }, 3500); }, { threshold: .4 }).observe(box);
+})();
+</script>
