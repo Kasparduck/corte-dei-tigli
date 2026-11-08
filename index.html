@@ -198,10 +198,16 @@ html { scroll-behavior: smooth; scroll-padding-top: 16px; }
 .risposta .righe b { color: var(--inchiostro); }
 .risposta .cause { font-family: var(--display); font-style: italic; font-size: 1.15rem; color: var(--inchiostro); line-height: 1.4; }
 .risposta .bottone { display: inline-block; margin-top: 16px; font: 400 1.08rem var(--display); color: #111; letter-spacing: .01em; }
-.volto { float: right; width: 116px; height: 144px; margin: 0 0 12px 18px; position: relative; border: 1px solid rgb(255 255 255 / .85); background: var(--velluto); overflow: hidden; display: grid; place-items: end start; }
-.volto.ok em { display: none; }
-.volto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
-.volto em { position: relative; font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tenue); padding: 8px; line-height: 1.3; }
+/* 8/11 (Franco): nella risposta l'immagine della specialità (il cuore, le vertebre) e il medico che entra di lato a ogni scelta */
+.scena { position: relative; aspect-ratio: 16 / 9; overflow: hidden; margin: -6px -8px 16px; border: 1px solid rgb(255 255 255 / .25); background: var(--velluto); }
+.scena > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.scena .chi-visita { right: 12px; bottom: 12px; width: 30%; }
+@media (prefers-reduced-motion: no-preference) {
+  .scena .chi-visita.entra { animation: entra-di-lato .9s cubic-bezier(.2, .7, .2, 1) both; }
+  @keyframes entra-di-lato { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+  .scena > img.cambia { animation: dissolvi .6s ease both; }
+  @keyframes dissolvi { from { opacity: .2; } to { opacity: 1; } }
+}
 .filo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
 .filo path { fill: none; stroke: #d6383a; stroke-width: 1; stroke-dasharray: 4 3; }
 .filo circle { fill: #d6383a; }
@@ -243,6 +249,24 @@ html { scroll-behavior: smooth; scroll-padding-top: 16px; }
 .spec h3 { font-size: 1.4rem; }
 .spec ul { margin: 0; padding-left: 18px; color: var(--tenue); font-size: .93rem; display: grid; gap: 3px; }
 .spec:hover { border-color: var(--argento); }
+/* 8/11 (Franco: «c'è un affastellamento eccessivo di riquadri»): specialità e medici in una sezione sola.
+   Il medico, sulla sua pietra (cornice sottile), sta SEMPRE in basso a destra, a cavallo tra l'immagine e il testo: passa davanti e «chiude la finestra».
+   Entra scivolando di lato una volta sola, quando la scheda arriva sullo schermo, una scheda dopo l'altra; poi resta fermo. */
+.spec { position: relative; grid-template-rows: auto 0 1fr; } /* tre righe: immagine, aggancio del medico (alto 0), testo; lo spazio in più va in fondo, non sopra il titolo */
+.spec .img em { max-width: calc(64% - 14px); }
+.aggancio { position: relative; height: 0; z-index: 2; }
+.chi-visita { position: absolute; right: 14px; bottom: -46px; width: 31%; aspect-ratio: 1; box-shadow: 0 16px 34px rgb(0 0 0 / .6); }
+.chi-visita canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.chi-visita img { position: absolute; inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); object-fit: cover; object-position: 50% 22%; outline: 1px solid rgb(255 255 255 / .55); }
+.spec .corpo h3 { padding-right: calc(31% + 4px); min-height: 2.2rem; display: flex; align-items: flex-end; } /* il titolo si stringe a sinistra del medico, così tutte le schede restano allineate */
+.spec .medico-nome { font-weight: 700; color: var(--inchiostro); }
+.spec .ordine { font-size: .82rem; color: var(--tenue); line-height: 1.4; }
+.spec .in-studio { font-size: .84rem; color: var(--tenue); border-top: 1px solid var(--linea); padding-top: 8px; margin-top: 2px; }
+.spec .in-studio b { font-size: .64rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--opale); margin-right: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .scivola .chi-visita { opacity: 0; transform: translateX(28px); transition: opacity .7s ease, transform 1s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--ritardo, 0s); }
+  .scivola .chi-visita.entrato { opacity: 1; transform: none; }
+}
 
 /* 4. medici */
 .griglia-medici { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
@@ -433,7 +457,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 16px; }
       <span class="parole"><b>Corte dei Tigli</b><small>Poliambulatorio</small></span>
     </a>
     <div class="voci">
-      <nav aria-label="Sezioni"><a href="#specialita">Specialità</a><a href="#medici">Medici</a><a href="#prezzi">Prezzi</a><a href="#orari">Come arrivare</a></nav>
+      <nav aria-label="Sezioni"><a href="#specialita">Specialità e medici</a><a href="#prezzi">Prezzi</a><a href="#orari">Come arrivare</a></nav>
       <a class="referti" href="#">Referti on-line</a>
       <span class="tel">0141 000 000<span>lun–sab, 7:00–20:00</span></span>
       <a class="prenota" href="#">Prenota</a>
@@ -520,7 +544,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 16px; }
         <p class="didascalia">Tocca un punto del corpo</p>
       </div>
       <div class="risposta" aria-live="polite">
-        <div class="volto"><img id="r-volto" alt=""><em>Foto del medico<br>da GPT</em></div>
+        <div class="scena"><img id="r-spec-img" alt=""><div class="chi-visita" id="r-chi-visita"><canvas class="pietra" id="r-pietra" data-pietra="howlite" data-seme="41"></canvas><img id="r-volto" alt=""></div></div>
         <small id="r-frase"></small>
         <h3 id="r-spec"></h3>
         <p class="chi" id="r-chi"></p>
@@ -552,39 +576,20 @@ html { scroll-behavior: smooth; scroll-padding-top: 16px; }
 
   <section class="sez" id="specialita" aria-labelledby="t-spec">
     <div class="sez-testa">
-      <span class="occhio">Le specialità</span>
-      <h2 id="t-spec">Chi trovi <em>alla Corte dei Tigli</em></h2>
-      <p>Sotto ogni specialità, i disturbi più comuni per cui rivolgersi, detti con parole semplici.</p>
+      <span class="occhio">Le specialità e i medici</span>
+      <h2 id="t-spec">Chi trovi, <em>e chi ti visita</em></h2>
+      <p>Per ogni specialità il medico che ti visita, con il suo numero d'iscrizione all'Ordine, e i disturbi più comuni detti con parole semplici.</p>
     </div>
-    <div class="griglia-spec">
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/ortopedia.jpg" alt="La colonna vertebrale in trasparenza, con le vertebre in luce e i nervi" loading="lazy"><em>Ortopedia · La colonna</em></div><div class="corpo"><h3>Ortopedia</h3><ul><li>Mal di schiena che non passa</li><li>Dolore a ginocchio, spalla, anca</li><li>Traumi sportivi</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/cardiologia.jpg" alt="Un cuore in veli di luce rossa, con le coronarie che lo avvolgono" loading="lazy"><em>Cardiologia · Albero coronarico</em></div><div class="corpo"><h3>Cardiologia</h3><ul><li>Pressione alta</li><li>Palpitazioni, affanno</li><li>Controllo prima dello sport</li></ul></div></a>
-      <a class="spec sfalsata" href="#cerca"><div class="img"><img src="img/specialita/dermatologia.jpg" alt="Gli strati della pelle in trasparenza, con un follicolo pilifero e i piccoli vasi" loading="lazy"><em>Dermatologia · Gli strati della pelle</em></div><div class="corpo"><h3>Dermatologia</h3><ul><li>Nei che cambiano forma o colore</li><li>Acne, macchie, prurito</li><li>Controllo annuale della pelle</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/fisioterapia.jpg" alt="Un braccio che si alza, con i muscoli in fasci di luce verde salvia" loading="lazy"><em>Fisioterapia · Il gesto ritrovato</em></div><div class="corpo"><h3>Fisioterapia</h3><ul><li>Recupero dopo un intervento</li><li>Dolori di collo e schiena</li><li>Rieducazione dopo una frattura</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/laboratorio.jpg" alt="Globuli rossi e bianchi che scorrono dentro un vaso di luce" loading="lazy"><em>Laboratorio analisi · Il sangue da vicino</em></div><div class="corpo"><h3>Laboratorio analisi</h3><ul><li>Esami del sangue e delle urine</li><li>Senza prenotazione dalle 7:00</li><li>Referti on-line</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/diagnostica.jpg" alt="Un addome in trasparenza attraversato dalle onde dell'ecografia, con fegato e rene" loading="lazy"><em>Diagnostica per immagini · Dentro l’immagine</em></div><div class="corpo"><h3>Diagnostica per immagini</h3><ul><li>Ecografie</li><li>Radiografie</li><li>Referto a fine esame</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/pediatria.jpg" alt="La mano di un bambino, in trasparenza, che stringe il dito di un adulto" loading="lazy"><em>Pediatria · Una mano piccola</em></div><div class="corpo"><h3>Pediatria</h3><ul><li>Visite di controllo</li><li>Febbre e tosse che non passano</li><li>Anche il sabato mattina</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/oculistica.jpg" alt="Le fibre dell'iride in luce verde e oro, intorno alla pupilla" loading="lazy"><em>Oculistica · La trama dell’iride</em></div><div class="corpo"><h3>Oculistica</h3><ul><li>Vista che peggiora</li><li>Occhi secchi o arrossati</li><li>Controllo per la patente</li></ul></div></a>
-      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/neurologia.jpg" alt="Il cervello in trasparenza, con le reti dei nervi che si accendono" loading="lazy"><em>Neurologia · Le reti del cervello</em></div><div class="corpo"><h3>Neurologia</h3><ul><li>Mal di testa frequente</li><li>Vertigini, formicolii</li><li>Memoria che fa cilecca</li></ul></div></a>
-    </div>
-  </section>
-
-  <section class="sez" id="medici" aria-labelledby="t-medici">
-    <div class="sez-testa">
-      <span class="occhio">I medici</span>
-      <h2 id="t-medici">Prima di entrare, <em>sai chi ti visita</em></h2>
-      <p>Volto, nome, specialità e iscrizione all'Ordine. Le foto vere arriveranno con le persone vere.</p>
-    </div>
-    <div class="griglia-medici">
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="howlite" data-seme="41"></canvas><div class="angolo sfalsata bl"><img src="img/medici/moretti.jpg" alt="Il dott. Luca Moretti nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>LM</b><em>Foto da GPT</em></div></div><div><h3>Dott. Luca Moretti</h3><p class="spec-m">Ortopedia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve martedì e giovedì.</p><p class="strumenti"><span>In studio</span>Ecografo muscolo-scheletrico; artroscopia per gli interventi in giornata.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="granato" data-seme="42"></canvas><div class="angolo sfalsata tl"><img src="img/medici/rinaldi.jpg" alt="Il dott. Paolo Rinaldi nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>PR</b><em>Foto da GPT</em></div></div><div><h3>Dott. Paolo Rinaldi</h3><p class="spec-m">Cardiologia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve lunedì e mercoledì.</p><p class="strumenti"><span>In studio</span>Ecocardiografo 3D, elettrocardiogramma, Holter cardiaco e pressorio.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="sole" data-seme="43"></canvas><div class="angolo sfalsata br"><img src="img/medici/colombo.jpg" alt="La dott.ssa Sara Colombo nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>SC</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Sara Colombo</h3><p class="spec-m">Dermatologia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve mercoledì e venerdì.</p><p class="strumenti"><span>In studio</span>Videodermatoscopio digitale con la mappa dei nei, da confrontare negli anni.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="rutilato" data-seme="47"></canvas><div class="angolo sfalsata tr"><img src="img/medici/ferrari.jpg" alt="Il dott. Marco Ferrari nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>MF</b><em>Foto da GPT</em></div></div><div><h3>Dott. Marco Ferrari</h3><p class="spec-m">Neurologia</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve giovedì.</p><p class="strumenti"><span>In studio</span>Elettroencefalografo digitale ed elettromiografo.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="larimar" data-seme="44"></canvas><div class="angolo sfalsata bl"><img src="img/medici/gatti.jpg" alt="La dott.ssa Laura Gatti nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>LG</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Laura Gatti</h3><p class="spec-m">Diagnostica per immagini</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve tutti i giorni.</p><p class="strumenti"><span>In studio</span>Ecografo di fascia alta con elastosonografia; radiologia digitale a basse dosi.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="ambra" data-seme="45"></canvas><div class="angolo sfalsata br"><img src="img/medici/ferri.jpg" alt="La dott.ssa Elena Ferri nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>EF</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Elena Ferri</h3><p class="spec-m">Pediatria</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve martedì e sabato.</p><p class="strumenti"><span>In studio</span>Otoscopio digitale, saturimetro pediatrico, sala visite pensata per i bambini.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="malachite" data-seme="46"></canvas><div class="angolo sfalsata bl"><img src="img/medici/bellini.jpg" alt="La dott.ssa Chiara Bellini nel suo studio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>CB</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Chiara Bellini</h3><p class="spec-m">Oculistica</p><p>Ordine dei Medici di Asti n. 0000 (di fantasia). Riceve lunedì e giovedì.</p><p class="strumenti"><span>In studio</span>Tomografia a coerenza ottica (OCT) e campo visivo computerizzato.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="crisocolla" data-seme="48"></canvas><div class="angolo sfalsata tr"><img src="img/medici/riva.jpg" alt="La dott.ssa Paola Riva in laboratorio" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>PR</b><em>Foto da GPT</em></div></div><div><h3>Dott.ssa Paola Riva</h3><p class="spec-m">Laboratorio analisi · biologa</p><p>Ordine Nazionale dei Biologi n. 0000 (di fantasia). Prelievi lun–sab dalle 7:00.</p><p class="strumenti"><span>In laboratorio</span>Analizzatori automatici per sangue e urine; referti on-line in giornata.</p></div></article>
-      <article class="medico"><div class="ritratto"><canvas class="pietra" data-pietra="giada" data-seme="49"></canvas><div class="angolo sfalsata br"><img src="img/medici/conti.jpg" alt="Il dott. Andrea Conti in palestra" onload="this.parentNode.classList.add('ok')" onerror="this.remove()"><b>AC</b><em>Foto da GPT</em></div></div><div><h3>Dott. Andrea Conti</h3><p class="spec-m">Fisioterapia · fisioterapista</p><p>Ordine TSRM e PSTRP di Asti, Albo dei Fisioterapisti n. 0000 (di fantasia).</p><p class="strumenti"><span>In palestra</span>Onde d'urto, laser ad alta potenza, attrezzi per la rieducazione.</p></div></article>
+    <div class="griglia-spec scivola">
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/ortopedia.jpg" alt="La colonna vertebrale in trasparenza, con le vertebre in luce e i nervi" loading="lazy"><em>Ortopedia · La colonna</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="howlite" data-seme="41"></canvas><img src="img/medici/moretti.jpg" alt="Il dott. Luca Moretti nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Ortopedia</h3><p class="medico-nome">Dott. Luca Moretti</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · riceve martedì e giovedì</p><ul><li>Mal di schiena che non passa</li><li>Dolore a ginocchio, spalla, anca</li><li>Traumi sportivi</li></ul><p class="in-studio"><b>In studio</b>ecografo muscolo-scheletrico, artroscopia</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/cardiologia.jpg" alt="Un cuore in veli di luce rossa, con le coronarie che lo avvolgono" loading="lazy"><em>Cardiologia · Albero coronarico</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="granato" data-seme="42"></canvas><img src="img/medici/rinaldi.jpg" alt="Il dott. Paolo Rinaldi nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Cardiologia</h3><p class="medico-nome">Dott. Paolo Rinaldi</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · riceve lunedì e mercoledì</p><ul><li>Pressione alta</li><li>Palpitazioni, affanno</li><li>Controllo prima dello sport</li></ul><p class="in-studio"><b>In studio</b>ecocardiografo 3D, elettrocardiogramma, Holter</p></div></a>
+      <a class="spec sfalsata" href="#cerca"><div class="img"><img src="img/specialita/dermatologia.jpg" alt="Gli strati della pelle in trasparenza, con un follicolo pilifero e i piccoli vasi" loading="lazy"><em>Dermatologia · Gli strati della pelle</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="sole" data-seme="43"></canvas><img src="img/medici/colombo.jpg" alt="La dott.ssa Sara Colombo nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Dermatologia</h3><p class="medico-nome">Dott.ssa Sara Colombo</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · riceve mercoledì e venerdì</p><ul><li>Nei che cambiano forma o colore</li><li>Acne, macchie, prurito</li><li>Controllo annuale della pelle</li></ul><p class="in-studio"><b>In studio</b>videodermatoscopio con la mappa dei nei</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/fisioterapia.jpg" alt="Un braccio che si alza, con i muscoli in fasci di luce verde salvia" loading="lazy"><em>Fisioterapia · Il gesto ritrovato</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="giada" data-seme="49"></canvas><img src="img/medici/conti.jpg" alt="Il dott. Andrea Conti nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Fisioterapia</h3><p class="medico-nome">Dott. Andrea Conti, fisioterapista</p><p class="ordine">Albo dei Fisioterapisti, Ordine TSRM e PSTRP di Asti n. 0000 (di fantasia)</p><ul><li>Recupero dopo un intervento</li><li>Dolori di collo e schiena</li><li>Rieducazione dopo una frattura</li></ul><p class="in-studio"><b>In studio</b>onde d'urto, laser ad alta potenza</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/laboratorio.jpg" alt="Globuli rossi e bianchi che scorrono dentro un vaso di luce" loading="lazy"><em>Laboratorio analisi · Il sangue da vicino</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="crisocolla" data-seme="48"></canvas><img src="img/medici/riva.jpg" alt="La dott.ssa Paola Riva nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Laboratorio analisi</h3><p class="medico-nome">Dott.ssa Paola Riva, biologa</p><p class="ordine">Ordine Nazionale dei Biologi n. 0000 (di fantasia) · prelievi dalle 7:00</p><ul><li>Esami del sangue e delle urine</li><li>Senza prenotazione dalle 7:00</li><li>Referti on-line in giornata</li></ul><p class="in-studio"><b>In studio</b>analizzatori automatici per sangue e urine</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/diagnostica.jpg" alt="Un addome in trasparenza attraversato dalle onde dell'ecografia, con fegato e rene" loading="lazy"><em>Diagnostica · Dentro l’immagine</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="larimar" data-seme="44"></canvas><img src="img/medici/gatti.jpg" alt="La dott.ssa Laura Gatti nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Diagnostica per immagini</h3><p class="medico-nome">Dott.ssa Laura Gatti</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · tutti i giorni</p><ul><li>Ecografie</li><li>Radiografie</li><li>Referto a fine esame</li></ul><p class="in-studio"><b>In studio</b>ecografo con elastosonografia, radiologia digitale</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/pediatria.jpg" alt="La mano di un bambino, in trasparenza, che stringe il dito di un adulto" loading="lazy"><em>Pediatria · Una mano piccola</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="ambra" data-seme="45"></canvas><img src="img/medici/ferri.jpg" alt="La dott.ssa Elena Ferri nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Pediatria</h3><p class="medico-nome">Dott.ssa Elena Ferri</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · riceve martedì e sabato</p><ul><li>Visite di controllo</li><li>Febbre e tosse che non passano</li><li>Anche il sabato mattina</li></ul><p class="in-studio"><b>In studio</b>otoscopio digitale, sala pensata per i bambini</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/oculistica.jpg" alt="Le fibre dell'iride in luce verde e oro, intorno alla pupilla" loading="lazy"><em>Oculistica · La trama dell’iride</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="malachite" data-seme="46"></canvas><img src="img/medici/bellini.jpg" alt="La dott.ssa Chiara Bellini nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Oculistica</h3><p class="medico-nome">Dott.ssa Chiara Bellini</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · riceve lunedì e giovedì</p><ul><li>Vista che peggiora</li><li>Occhi secchi o arrossati</li><li>Controllo per la patente</li></ul><p class="in-studio"><b>In studio</b>tomografia OCT, campo visivo computerizzato</p></div></a>
+      <a class="spec" href="#cerca"><div class="img"><img src="img/specialita/neurologia.jpg" alt="Il cervello in trasparenza, con le reti dei nervi che si accendono" loading="lazy"><em>Neurologia · Le reti del cervello</em></div><div class="aggancio"><div class="chi-visita"><canvas class="pietra" data-pietra="rutilato" data-seme="47"></canvas><img src="img/medici/ferrari.jpg" alt="Il dott. Marco Ferrari nel suo studio" loading="lazy"></div></div><div class="corpo"><h3>Neurologia</h3><p class="medico-nome">Dott. Marco Ferrari</p><p class="ordine">Ordine dei Medici di Asti n. 0000 (di fantasia) · riceve giovedì</p><ul><li>Mal di testa frequente</li><li>Vertigini, formicolii</li><li>Memoria che fa cilecca</li></ul><p class="in-studio"><b>In studio</b>elettroencefalografo, elettromiografo</p></div></a>
     </div>
   </section>
 
@@ -1361,7 +1366,7 @@ function capisci(testo) {
 function rispondi(k) {
   const [frase, spec, chi, quando, prezzo, nota, cause] = RISPOSTE[k];
   document.getElementById('r-cause').textContent = cause;
-  const v = document.getElementById('r-volto'), cornice = v.parentNode; v.style.display = ''; cornice.classList.remove('ok'); v.onload = () => cornice.classList.add('ok'); v.onerror = () => { v.style.display = 'none'; cornice.classList.remove('ok'); }; v.src = 'img/medici/' + (MEDICO_DI[k] || k) + '.jpg';
+  mostraChiVisita(k);
   document.getElementById('r-frase').textContent = frase;
   document.getElementById('r-spec').textContent = spec;
   document.getElementById('r-chi').textContent = chi;
@@ -1371,6 +1376,28 @@ function rispondi(k) {
   document.querySelectorAll('.frasi button, .punto').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k));
   requestAnimationFrame(tracciaFilo);
 }
+/* 8/11 (Franco): nella risposta l'immagine della specialità e il medico che entra di lato, sulla sua pietra */
+const SPEC_IMG = { schiena: 'ortopedia', ginocchio: 'ortopedia', spalla: 'ortopedia', cuore: 'cardiologia', pelle: 'dermatologia', bambini: 'pediatria', occhi: 'oculistica', testa: 'neurologia', analisi: 'laboratorio', collo: 'fisioterapia', pancia: 'diagnostica' };
+const PIETRA_DI = { moretti: ['howlite', 41], rinaldi: ['granato', 42], colombo: ['sole', 43], ferrari: ['rutilato', 47], gatti: ['larimar', 44], ferri: ['ambra', 45], bellini: ['malachite', 46], riva: ['crisocolla', 48], conti: ['giada', 49] };
+function mostraChiVisita(k) {
+  const med = MEDICO_DI[k] || k, sfondo = document.getElementById('r-spec-img'), volto = document.getElementById('r-volto'), tessera = document.getElementById('r-chi-visita'), cv = document.getElementById('r-pietra');
+  const nuova = 'img/specialita/' + (SPEC_IMG[k] || 'ortopedia') + '.jpg';
+  if (!sfondo.src.endsWith(nuova)) { sfondo.classList.remove('cambia'); void sfondo.offsetWidth; sfondo.src = nuova; sfondo.classList.add('cambia'); }
+  sfondo.alt = 'Immagine della specialità: ' + RISPOSTE[k][1];
+  volto.src = 'img/medici/' + med + '.jpg'; volto.alt = RISPOSTE[k][2];
+  const [p, s] = PIETRA_DI[med] || ['howlite', 41]; cv.dataset.pietra = p; cv.dataset.seme = s; cv.width = 1; try { dipingi(cv); } catch (e) {}
+  tessera.classList.remove('entra'); void tessera.offsetWidth; tessera.classList.add('entra');
+}
+/* le schede delle specialità: il medico entra scivolando una volta sola, quando la scheda arriva sullo schermo; quelle che arrivano insieme, una dopo l'altra */
+(function () {
+  const schede = [...document.querySelectorAll('.scivola .spec')];
+  if (!('IntersectionObserver' in window)) { schede.forEach(s => s.querySelector('.chi-visita').classList.add('entrato')); return; }
+  const io = new IntersectionObserver(es => {
+    es.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left)
+      .forEach((e, i) => { const t = e.target.querySelector('.chi-visita'); t.style.setProperty('--ritardo', (i * 0.16).toFixed(2) + 's'); t.classList.add('entrato'); io.unobserve(e.target); });
+  }, { threshold: 0.45 });
+  schede.forEach(s => io.observe(s));
+})();
 document.querySelectorAll('.frasi button').forEach(b => b.addEventListener('click', () => rispondi(b.dataset.k)));
 document.querySelectorAll('.punto').forEach(p => {
   p.addEventListener('click', () => rispondi(p.dataset.k));
@@ -1385,7 +1412,7 @@ rispondi('schiena');
   const box = document.querySelector('.figura-luce'); if (!box || !window.THREE || !window.CORPO_LUCE) return;
   const svg = box.querySelector('svg');
   const punti = [...svg.querySelectorAll('.punto circle')].map(c => ({ c, u: +c.getAttribute('cx') / 200, v: +c.getAttribute('cy') / 300 }));
-  let renderer; try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { return; }
+  let renderer; try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); } catch (e) { return; }
   const img = new Image(); img.onload = avvia; img.src = window.CORPO_LUCE;
 
   function avvia() {
